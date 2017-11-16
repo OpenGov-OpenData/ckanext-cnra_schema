@@ -1,0 +1,152 @@
+scheming_version: 1
+dataset_type: dataset
+about: California Natural Resources Agency (CNRA) Data Model
+about_url: https://github.com/OpenGov-OpenData/ckanext-cnra_schema
+
+
+## CKAN Package/Dataset Fields
+dataset_fields:
+
+## "title"
+#  Use core CKAN field for title
+- field_name: title
+  label: Title
+  preset: title
+  form_placeholder: eg. A descriptive title
+  required: True
+
+## "name"
+#  Use core CKAN field for dataset URL slug, generated from title with JS
+- field_name: name
+  label: URL
+  preset: dataset_slug
+  form_placeholder: eg. my-dataset
+
+## "notes"
+#  Use core CKAN field for notes
+- field_name: notes
+  label: Description
+  form_snippet: markdown.html
+  form_placeholder: eg. Some useful notes about the data
+  required: True
+
+## "keywords"
+#  Use core CKAN free-form tag field
+- field_name: tag_string
+  label: Tags
+  preset: tag_string_autocomplete
+  form_placeholder: Enter descriptive keywords.
+  required: True
+
+## "organization"
+- field_name: owner_org
+  label: Organization
+  preset: dataset_organization
+
+## "contact_name"
+- field_name: contact_name
+  label: Contact Name
+  form_snippet: text.html
+  form_placeholder: Enter the name of the contact who maintains the dataset.
+  required: True
+
+## "contact_email"
+- field_name: contact_email
+  label: Contact Email
+  form_placeholder: The email for the dataset maintainer.
+  display_snippet: email.html
+  required: True
+
+## "license_id"
+- field_name: license_id
+  label: License
+  form_snippet: license.html
+  help_text: License definitions and additional information can be found at http://opendefinition.org/
+
+## "program"
+- field_name: program
+  label: Program
+  form_snippet: text.html
+  form_placeholder: Program or cross functional team name.
+
+## "spatial_coverage"
+- field_name: spatial_coverage
+  label: Spatial Coverage
+  form_snippet: markdown.html
+  form_placeholder: Name of defined area or geometry of area data describes.
+
+## "temporal_coverage"
+- field_name: temporal_coverage
+  label: Temporal Coverage
+  form_snippet: markdown.html
+  form_placeholder: Start and end time of events described in data.
+
+## "frequency"
+- field_name: frequency
+  label: Frequency
+  preset: select
+  choices:
+  - label: Irregular
+    value: irregular
+  - label: Daily
+    value: daily
+  - label: Weekly
+    value: weekly
+  - label: Monthly
+    value: monthly
+  - label: Quarterly
+    value: quarterly
+  - label: Semiannual
+    value: semiannual
+  - label: Annual
+    value: annual
+  - label: Decennial
+    value: decennial
+  - label: Other
+    value: other
+
+## "language"
+- field_name: language
+  label: Language
+  form_snippet: text.html
+  form_placeholder: English
+
+## "url"
+#  Use core CKAN datase url field
+- field_name: url
+  label: Homepage URL
+  form_placeholder: URL for the page with useful information on the program creating the data.
+  display_property: foaf:homepage
+  display_snippet: link.html
+
+## "limitations"
+- field_name: limitations
+  label: Limitations
+  form_snippet: markdown.html
+  form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
+
+
+
+## CKAN Resource Fields
+resource_fields:
+
+- field_name: url
+  label: URL
+  preset: resource_url_upload
+
+## "title"
+#  Core CKAN resource field "name"
+- field_name: name
+  label: Title
+  form_placeholder: Descriptive name of the resource.
+
+## "description"
+#  Core CKAN resource field "description"
+- field_name: description
+  label: Description
+  form_snippet: markdown.html
+  form_placeholder: Summary explanation of file contents, purpose, origination, methods and usage guidance.
+
+- field_name: format
+  label: Format
+  preset: resource_format_autocomplete
