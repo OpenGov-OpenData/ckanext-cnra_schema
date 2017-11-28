@@ -150,3 +150,9 @@ resource_fields:
 - field_name: format
   label: Format
   preset: resource_format_autocomplete
+
+## "data_standard"
+- field_name: data_standard
+  label: Data Standard
+  form_snippet: text.html
+  form_placeholder: Established file structure defined for a particular use.
