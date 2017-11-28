@@ -57,6 +57,19 @@ dataset_fields:
   display_snippet: email.html
   required: True
 
+## "public_access_level"
+- field_name: public_access_level
+  label: Public Access Level
+  preset: select
+  required: True
+  choices:
+  - label: Public
+    value: Public
+  - label: Restricted
+    value: Restricted
+  - label: Non-Public
+    value: Non-Public
+
 ## "license_id"
 - field_name: license_id
   label: License
@@ -87,23 +100,23 @@ dataset_fields:
   preset: select
   choices:
   - label: Irregular
-    value: irregular
+    value: Irregular
   - label: Daily
-    value: daily
+    value: Daily
   - label: Weekly
-    value: weekly
+    value: Weekly
   - label: Monthly
-    value: monthly
+    value: Monthly
   - label: Quarterly
-    value: quarterly
+    value: Quarterly
   - label: Semiannual
-    value: semiannual
+    value: Semiannual
   - label: Annual
-    value: annual
+    value: Annual
   - label: Decennial
-    value: decennial
+    value: Decennial
   - label: Other
-    value: other
+    value: Other
 
 ## "language"
 - field_name: language
