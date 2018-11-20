@@ -5,20 +5,69 @@
         <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
         <script type="text/javascript">
             window.addEventListener("load", function() {
+                // specific to CNRA's usage: specify the names of input fields and custom fields
+                // which will be filled in with the full GeoJSON and/or just the bounds
+                var geojson_field = '{{ field.geojson_field }}';
+                var extent_field = '{{ field.extent_field }}';
+                var geojson_custom_field = '{{ field.geojson_custom_field }}';
+                var extent_custom_field = '{{ field.extent_custom_field }}';
+
+                // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
+                // so here's a helper function
+                var bounds2shape = function (bounds) {
+                    return {
+                        type: "Polygon",
+                        coordinates: [[
+                            [ bounds.w, bounds.s ],
+                            [ bounds.w, bounds.n ],
+                            [ bounds.e, bounds.n ],
+                            [ bounds.e, bounds.s ],
+                            [ bounds.w, bounds.s ]
+                        ]],
+                    };
+                };
+
                 var gazwidget_{{ field.field_name }} = new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
                     showBoundingBox: true,
                     selectedTool: 'box',
-                    // speific to CNRA's usage: specify the fields and custom fields, to receive the full GeoJSON and/or just the bounds
-                    geojson_field: '{{ field.geojson_field }}',
-                    extent_field: '{{ field.extent_field }}',
-                    geojson_custom_field: '{{ field.geojson_custom_field }}',
-                    extent_custom_field: '{{ field.extent_custom_field }}',
                     onLoad: function () {
-// TODO: look for this.geojson_field and fetch its value, then load that as a JSON string
-console.error([ 'GDA gaz ready', this.geojson_field, this.extent_field, this.geojson_custom_field, this.extent_custom_field ]);
+// TODO: look for geojson_field and fetch its value, then load that as a JSON string
+console.error([ 'GDA gaz ready', geojson_field, extent_field, geojson_custom_field, extent_custom_field ]);
                     },
                     onChange: function (bboxinfo) {
-console.error([ 'GDA saving bbox info to other fields', this.geojson_field, this.extent_field, this.geojson_custom_field, this.extent_custom_field ]);
+                        // find the input fields and/or custom fields
+                        // where we should set a value of the whole GeoJSON bboxinfo and/or just the bounds
+                        // e.g. so the drawn shapes and box are saved to their intended form fields or custom fields
+
+
+                        var update_or_create_custom_field = function (fieldname, value) {
+console.error([ 'update_or_create_custom_field', fieldname, value ]);
+//TODO must handle the condition of no custom fields being available: all 3 of 3 currently in use
+                        };
+
+                        if (geojson_field) {
+                            var jsonfieldid = 'field-' + geojson_field;
+                            var jsonfield = document.getElementById(jsonfieldid);
+                            if (! jsonfield) console.error("GazetteerWidget could not find geojson_field with id " + jsonfieldid);
+                            else {
+                                jsonfield.value = bboxinfo ? JSON.stringify(bboxinfo) : '';
+                            }
+                        }
+                        if (extent_field) {
+                            var bboxfieldid = 'field-' + extent_field;
+                            var bboxfield = document.getElementById(bboxfieldid);
+                            if (! bboxfield) console.error("GazetteerWidget could not find extent_field with id " + bboxfieldid);
+                            else {
+                                bboxfield.value = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
+                            }
+                        }
+
+                        if (geojson_custom_field) {
+console.error(geojson_custom_field);
+                        }
+                        if (extent_custom_field) {
+console.error(extent_custom_field);
+                        }
                     }
                 });
             });
