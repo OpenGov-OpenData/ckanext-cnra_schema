@@ -7,6 +7,7 @@
             window.addEventListener("load", function() {
                 // specific to CNRA's usage: specify the names of input fields and custom fields
                 // which will be filled in with the full GeoJSON and/or just the bounds
+                var load_geojson_field = '{{ field.load_geojson_field }}';
                 var geojson_field = '{{ field.geojson_field }}';
                 var extent_field = '{{ field.extent_field }}';
                 var geojson_custom_field = '{{ field.geojson_custom_field }}';
@@ -31,8 +32,21 @@
                     showBoundingBox: true,
                     selectedTool: 'box',
                     onLoad: function () {
-// TODO: look for geojson_field and fetch its value, then load that as a JSON string
-console.error([ 'GDA gaz ready', geojson_field, extent_field, geojson_custom_field, extent_custom_field ]);
+                        // on load, look for the load_geojson_field field and try to load its content as a GeoJSON string
+                        // it may be invalid or blank; try to be graceful about that
+                        var jsonfieldid = 'field-' + load_geojson_field;
+                        var jsonfield = document.getElementById(jsonfieldid);
+                        if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
+
+                        var jsontext = jsonfield.value.trim();
+                        if (! jsontext) return;
+
+                        try {
+                            this.loadGeoJsonString(jsontext);
+                        } catch (e) {
+                            console.error("GazetteerWidget could not load GeoJSON content. Invalid?");
+                            alert("Found existing Spatial Coverage details but could not read it into the map.");
+                        }
                     },
                     onChange: function (bboxinfo) {
                         // find the input fields and/or custom fields

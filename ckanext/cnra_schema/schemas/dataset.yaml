@@ -93,6 +93,7 @@ dataset_fields:
   label: Indicate Spatial Coverage
   form_snippet: gazetteer_widget.html
   display_snippet: gazetteer_widget.html
+  load_geojson_field: spatial_details
   geojson_field: spatial_details
   #extent_field: bboxgeometry
   #geojson_custom_field: gda_delete1
