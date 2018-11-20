@@ -96,8 +96,8 @@ dataset_fields:
   load_geojson_field: spatial_details
   geojson_field: spatial_details
   #extent_field: bboxgeometry
-  #geojson_custom_field: gda_delete1
-  #extent_custom_field: spatial
+  #geojson_field_custom: customjson
+  extent_field_custom: spatial
 
 ## "spatial_details"
 - field_name: spatial_details

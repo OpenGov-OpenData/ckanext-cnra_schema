@@ -10,8 +10,8 @@
                 var load_geojson_field = '{{ field.load_geojson_field }}';
                 var geojson_field = '{{ field.geojson_field }}';
                 var extent_field = '{{ field.extent_field }}';
-                var geojson_custom_field = '{{ field.geojson_custom_field }}';
-                var extent_custom_field = '{{ field.extent_custom_field }}';
+                var geojson_field_custom = '{{ field.geojson_field_custom }}';
+                var extent_field_custom = '{{ field.extent_field_custom }}';
 
                 // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
                 // so here's a helper function
@@ -28,7 +28,41 @@
                     };
                 };
 
-                var gazwidget_{{ field.field_name }} = new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+                // helper function to find a Custom Field by the given name, or else set one
+                var update_or_create_custom_field = function (fieldname, value) {
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    if (! customfields) {
+                        console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
+                        alert("Could not find custom fields section to save " + fieldname + " value.");
+                    }
+
+                    var didanddone = false, firstemptylblfield = null, firstemptyvalfield = null;
+                    Array.prototype.slice.call(customfields).forEach(function (fieldrow) {
+                        var lblfield = fieldrow.querySelectorAll('input[type="text"]')[0];
+                        var valfield = fieldrow.querySelectorAll('input[type="text"]')[1];
+
+                        if (lblfield.value == fieldname) {
+                            valfield.value = value;
+                            didanddone = true;
+                        }
+                        else if (! lblfield.value && ! firstemptylblfield) {
+                            firstemptyvalfield = valfield;
+                            firstemptylblfield = lblfield;
+                        }
+                    });
+
+                    if (! didanddone) {
+                        if (firstemptylblfield) {
+                            firstemptylblfield.value = fieldname;
+                            firstemptyvalfield.value = value;
+                        }
+                        else {
+                            console.error("GazetteerWidget could not find a blank Custom Field to create the new " + fieldname + " value.");
+                        }
+                    }
+                };
+
+                new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
                     showBoundingBox: true,
                     selectedTool: 'box',
                     onLoad: function () {
@@ -39,26 +73,12 @@
                         if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
 
                         var jsontext = jsonfield.value.trim();
-                        if (! jsontext) return;
-
-                        try {
-                            this.loadGeoJsonString(jsontext);
-                        } catch (e) {
-                            console.error("GazetteerWidget could not load GeoJSON content. Invalid?");
-                            alert("Found existing Spatial Coverage details but could not read it into the map.");
-                        }
+                        if (jsontext) this.loadGeoJsonString(jsontext);
                     },
                     onChange: function (bboxinfo) {
                         // find the input fields and/or custom fields
                         // where we should set a value of the whole GeoJSON bboxinfo and/or just the bounds
                         // e.g. so the drawn shapes and box are saved to their intended form fields or custom fields
-
-
-                        var update_or_create_custom_field = function (fieldname, value) {
-console.error([ 'update_or_create_custom_field', fieldname, value ]);
-//TODO must handle the condition of no custom fields being available: all 3 of 3 currently in use
-                        };
-
                         if (geojson_field) {
                             var jsonfieldid = 'field-' + geojson_field;
                             var jsonfield = document.getElementById(jsonfieldid);
@@ -76,11 +96,13 @@ console.error([ 'update_or_create_custom_field', fieldname, value ]);
                             }
                         }
 
-                        if (geojson_custom_field) {
-console.error(geojson_custom_field);
+                        if (geojson_field_custom) {
+                            var gjvalue = bboxinfo ? JSON.stringify(bboxinfo) : '';
+                            update_or_create_custom_field(geojson_field_custom, gjvalue);
                         }
-                        if (extent_custom_field) {
-console.error(extent_custom_field);
+                        if (extent_field_custom) {
+                            var extvalue = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
+                            update_or_create_custom_field(extent_field_custom, extvalue);
                         }
                     }
                 });
