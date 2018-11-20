@@ -1,0 +1,28 @@
+<div class="control-group control-full">
+    <label class="control-label" for="field-{{ field.field_name }}">{{ field.label }}</label>
+    <div class="controls editor">
+        <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
+        <script type="text/javascript">
+            window.addEventListener("load", function() {
+                var gazwidget_{{ field.field_name }} = new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+                    showBoundingBox: true,
+                    selectedTool: 'box',
+                    // speific to CNRA's usage: specify the fields and custom fields, to receive the full GeoJSON and/or just the bounds
+                    geojson_field: '{{ field.geojson_field }}',
+                    extent_field: '{{ field.extent_field }}',
+                    geojson_custom_field: '{{ field.geojson_custom_field }}',
+                    extent_custom_field: '{{ field.extent_custom_field }}',
+                    onLoad: function () {
+// TODO: look for this.geojson_field and fetch its value, then load that as a JSON string
+console.error([ 'GDA gaz ready', this.geojson_field, this.extent_field, this.geojson_custom_field, this.extent_custom_field ]);
+                    },
+                    onChange: function (bboxinfo) {
+console.error([ 'GDA saving bbox info to other fields', this.geojson_field, this.extent_field, this.geojson_custom_field, this.extent_custom_field ]);
+                    }
+                });
+            });
+        </script>
+        <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+    </div>
+</div>

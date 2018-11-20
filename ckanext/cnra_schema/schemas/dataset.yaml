@@ -88,6 +88,22 @@ dataset_fields:
   form_snippet: markdown.html
   form_placeholder: Name of defined area or geometry of area data describes.
 
+## "gazetteer_widget"
+- field_name: gazetteer_widget
+  label: Indicate Spatial Coverage
+  form_snippet: gazetteer_widget.html
+  display_snippet: gazetteer_widget.html
+  geojson_field: spatial_details
+  #extent_field: bboxgeometry
+  #geojson_custom_field: gda_delete1
+  #extent_custom_field: spatial
+
+## "spatial_details"
+- field_name: spatial_details
+  label: Spatial Coverage Details
+  form_snippet: text.html
+  form_placeholder: Filled in automatically as you select areas above.
+
 ## "temporal_coverage"
 - field_name: temporal_coverage
   label: Temporal Coverage
