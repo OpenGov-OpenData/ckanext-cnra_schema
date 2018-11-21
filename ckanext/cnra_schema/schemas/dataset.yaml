@@ -81,6 +81,7 @@ dataset_fields:
   label: Program
   form_snippet: text.html
   form_placeholder: Program or cross functional team name.
+  display_snippet: null
 
 ## "spatial_coverage"
 - field_name: spatial_coverage
@@ -92,7 +93,7 @@ dataset_fields:
 - field_name: gazetteer_widget
   label: Indicate Spatial Coverage
   form_snippet: gazetteer_widget.html
-  display_snippet: gazetteer_widget.html
+  display_snippet: null
   load_geojson_field: spatial_details
   geojson_field: spatial_details
   #extent_field: bboxgeometry
@@ -104,6 +105,7 @@ dataset_fields:
   label: Spatial Coverage Details
   form_snippet: text.html
   form_placeholder: Filled in automatically as you select areas above.
+  display_snippet: spatial_details.html
 
 ## "temporal_coverage"
 - field_name: temporal_coverage
@@ -134,6 +136,7 @@ dataset_fields:
     value: Decennial
   - label: Other
     value: Other
+  display_snippet: select.html
 
 ## "language"
 - field_name: language

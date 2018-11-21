@@ -1,0 +1,21 @@
+<!-- TODO, better escaping for JSON content? or validation? use of safe here is required, but also means content injection -->
+{%- if data['spatial_details'] -%}
+    <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
+    <script type="text/javascript">
+    window.addEventListener("load", function() {
+        var SPATIALDATA = {{ data['spatial_details']|safe }};
+
+        new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+            displayOnly: true,
+            showBoundingBox: true,
+            onLoad: function () {
+                this.loadGeoJsonObject(SPATIALDATA);
+            }
+        });
+    });
+    </script>
+    <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+{%- else -%}
+    Not specified.
+{%- endif -%}
