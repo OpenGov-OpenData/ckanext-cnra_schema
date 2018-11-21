@@ -8,6 +8,8 @@
 
         new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
             displayOnly: true,
+            geocoderControl: false,
+            basemapControl: false,
             showBoundingBox: true,
             onLoad: function () {
                 this.loadGeoJsonObject(SPATIALDATA);
