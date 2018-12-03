@@ -65,6 +65,7 @@
                 new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
                     showBoundingBox: true,
                     selectedTool: 'box',
+                    minZoom: 4,
                     onLoad: function () {
                         // on load, look for the load_geojson_field field and try to load its content as a GeoJSON string
                         // it may be invalid or blank; try to be graceful about that
