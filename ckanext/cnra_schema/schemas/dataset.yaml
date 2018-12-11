@@ -106,6 +106,7 @@ dataset_fields:
   form_snippet: text.html
   form_placeholder: Filled in automatically as you select areas above.
   display_snippet: spatial_details.html
+  validators: scheming_required scheming_valid_json_object
 
 ## "temporal_coverage"
 - field_name: temporal_coverage

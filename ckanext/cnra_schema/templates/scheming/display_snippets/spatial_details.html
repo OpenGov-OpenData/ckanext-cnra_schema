@@ -3,7 +3,7 @@
     <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
     <script type="text/javascript">
     window.addEventListener("load", function() {
-        var spatialdata = {{ h.confirmjson(data['spatial_details']) }};
+        var spatialdata = {{ data['spatial_details'] }};
         if (! spatialdata) return;
 
         new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
