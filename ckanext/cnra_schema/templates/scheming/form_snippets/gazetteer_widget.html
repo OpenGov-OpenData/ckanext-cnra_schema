@@ -28,7 +28,7 @@
                     };
                 };
 
-                // helper function to find a Custom Field by the given name, or else set one
+                // helper functions to find/set a value for a Custom Field
                 var update_or_create_custom_field = function (fieldname, value) {
                     var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
                     if (! customfields) {
@@ -61,6 +61,23 @@
                         }
                     }
                 };
+                var get_custom_field_value = function (fieldname) {
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    if (! customfields) {
+                        console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
+                        alert("Could not find custom fields section to save " + fieldname + " value.");
+                    }
+
+                    var foundvalue;
+                    Array.prototype.slice.call(customfields).forEach(function (fieldrow) {
+                        var lblfield = fieldrow.querySelectorAll('input[type="text"]')[0];
+                        var valfield = fieldrow.querySelectorAll('input[type="text"]')[1];
+                        if (lblfield.value == fieldname) {
+                            foundvalue = valfield.value;
+                        }
+                    });
+                    return foundvalue;
+                };
 
                 new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
                     showBoundingBox: true,
@@ -76,7 +93,39 @@
                         if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
 
                         var jsontext = jsonfield.value.trim();
-                        if (jsontext) this.loadGeoJsonString(jsontext);
+                        if (jsontext) {
+                            this.loadGeoJsonString(jsontext);
+                            return;
+                        }
+
+                        // if that was blank, then check the extent_field and extent_field_custom fields
+                        // if we find content there, it's GeoJSON representing a single Box which we should pre-load
+                        var onesingleboxgeojson = null;
+                        if (extent_field) {
+                            var bboxfieldid = 'field-' + extent_field;
+                            var bboxfield = document.getElementById(bboxfieldid);
+                            if (! bboxfield) console.error("GazetteerWidget could not find extent_field with id " + bboxfieldid);
+                            onesingleboxgeojson = bboxfield.value;
+                        }
+                        else if (extent_field_custom) {
+                            onesingleboxgeojson = get_custom_field_value(extent_field_custom);
+                        }
+
+                        if (onesingleboxgeojson) {
+                            try {
+                                var loadthisonebox = {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "title": "Predefined Box"
+                                    },
+                                    "geometry": JSON.parse(onesingleboxgeojson)
+                                },
+                                loadthisonebox = { "type": "FeatureCollection", "features": [ loadthisonebox ] };
+                                this.loadGeoJsonObject(loadthisonebox);
+                            } catch (e) {
+                                // invalid JSON? whatever, do nothing
+                            }
+                        }
                     },
                     onChange: function (bboxinfo) {
                         // find the input fields and/or custom fields
