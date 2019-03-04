@@ -83,12 +83,6 @@ dataset_fields:
   form_placeholder: Program or cross functional team name.
   display_snippet: null
 
-## "spatial_coverage"
-- field_name: spatial_coverage
-  label: Spatial Coverage
-  form_snippet: markdown.html
-  form_placeholder: Name of defined area or geometry of area data describes.
-
 ## "gazetteer_widget"
 - field_name: gazetteer_widget
   label: Indicate Spatial Coverage
@@ -99,6 +93,12 @@ dataset_fields:
   #extent_field: bboxgeometry
   #geojson_field_custom: customjson
   extent_field_custom: spatial
+
+## "spatial_coverage"
+- field_name: spatial_coverage
+  label: Spatial Coverage
+  form_snippet: markdown.html
+  form_placeholder: Name of defined area or geometry of area data describes.
 
 ## "spatial_details"
 - field_name: spatial_details
