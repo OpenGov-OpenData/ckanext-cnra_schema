@@ -87,7 +87,7 @@ dataset_fields:
 - field_name: gazetteer_widget
   label: Indicate Spatial Coverage
   form_snippet: gazetteer_widget.html
-  display_snippet: null
+  display_snippet: null  # for read-only mode, see spatial_details field which is the generated GeoJSON
   #
   # config options joining the Gazetteer Widget to other fields
   # load_geojson_field -- A field to check for GeoJSON content, and load as at startup.
