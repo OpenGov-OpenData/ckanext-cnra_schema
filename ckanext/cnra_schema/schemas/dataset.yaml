@@ -83,22 +83,43 @@ dataset_fields:
   form_placeholder: Program or cross functional team name.
   display_snippet: null
 
-## "spatial_coverage"
-- field_name: spatial_coverage
-  label: Spatial Coverage
-  form_snippet: markdown.html
-  form_placeholder: Name of defined area or geometry of area data describes.
-
 ## "gazetteer_widget"
 - field_name: gazetteer_widget
   label: Indicate Spatial Coverage
   form_snippet: gazetteer_widget.html
-  display_snippet: null
+  display_snippet: null  # for read-only mode, see spatial_details field which is the generated GeoJSON
+  #
+  # config options joining the Gazetteer Widget to other fields
+  # load_geojson_field -- A field to check for GeoJSON content, and load as at startup.
+  #                       Great when set to the same as geojson_field, to load its own saved data.
+  # geojson_field -- A field to be updated when areas are changed.
+  #                  Content will be a GeoJSON document of the saved places.
+  #                  Great when set to the same as load_geojson_field, so saved data will be loaded at next startup.
+  #                  The specified field should be configured with JSON validation.
+  # extent_field -- A field to be updated when areas are changed.
+  #                 Content will be a single GeoJSON feature, its geometry being the polygonal bounding box of all selected areas.
+  #                 The specified field should be configured with JSON validation.
+  # geojson_field_custom -- Same as geojson_field,
+  #                         but instead of a proper field, it's the name of a Custom Field to be found or created.
+  # extent_field_custom -- Same as extent_field,
+  #                        but instead of a proper field, it's the name of a Custom Field to be found or created.
+  # spatial_coverage_textbox -- A markdown/text field to populate with the names of list of selected places.
+  #                             Specific to this template use case, is a "Copy to Spatial Coverage field" button.
+  #                             When clicked, this button will append to the specified textbox, the list of selected areas.
+  #                             This provides a plain-text readout of areas, which can be useful for keyword searching.
+  #
   load_geojson_field: spatial_details
   geojson_field: spatial_details
   #extent_field: bboxgeometry
   #geojson_field_custom: customjson
   extent_field_custom: spatial
+  spatial_coverage_textbox: spatial_coverage
+
+## "spatial_coverage"
+- field_name: spatial_coverage
+  label: Spatial Coverage
+  form_snippet: markdown.html
+  form_placeholder: Name of defined area or geometry of area data describes.
 
 ## "spatial_details"
 - field_name: spatial_details

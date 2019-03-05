@@ -12,6 +12,7 @@
                 var extent_field = '{{ field.extent_field }}';
                 var geojson_field_custom = '{{ field.geojson_field_custom }}';
                 var extent_field_custom = '{{ field.extent_field_custom }}';
+                var spatial_coverage_textbox = '{{ field.spatial_coverage_textbox }}';
 
                 // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
                 // so here's a helper function
@@ -79,7 +80,7 @@
                     return foundvalue;
                 };
 
-                new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+                var widget = new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
                     showBoundingBox: true,
                     labelBoxCorners: true,
                     autoZoomBoundingBox: true,
@@ -159,8 +160,43 @@
                         }
                     }
                 });
+
+                // now the Copy to Spatial Coverage button, reading from the "widget" defined above
+                // we APEND to the existing field content, and try our best to not repeat a place already in there,
+                // e.g. if "Seattle, WA" is a point and "Seattle, WA." is in the text already, don't append it
+                // it's not at all wateright but is some convenience at least against re-adding our own points!
+                var copyplacenamesbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                var copyplacestextbox = document.getElementById('field-' + spatial_coverage_textbox);
+                if (spatial_coverage_textbox && copyplacenamesbutton && copyplacestextbox) {
+                    copyplacenamesbutton.addEventListener('click', function () {
+                        widget.listSelectedPlaces().forEach(function (place) {
+                            var thisplacename = place.title;
+
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point') return;
+
+                            var already = copyplacestextbox.value.match(new RegExp(thisplacename, 'i'));
+                            if (already) return;
+
+                            // go for it
+                            copyplacestextbox.value += " " + thisplacename + ".";
+                        });
+                    });
+                }
+                else if (! spatial_coverage_textbox) {
+                    // widget is not configured with a field; hide this button and be done with it
+                    copyplacenamesbutton.style.display = 'none';
+                }
+                else if (! copyplacenamesbutton) {
+                    // widget is configured but the button isn't in the template
+                    console.error("GazetteerWidget could not find spatial_coverage_textbox trigger button with id gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                }
+                else if (! copyplacestextbox) {
+                    // widget is configured but the specified field box doesn't exist
+                    console.error("GazetteerWidget could not find spatial_coverage_textbox with id " + spatial_coverage_textbox);
+                }
             });
         </script>
         <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamesbutton" style="width: 225px; color: white; background-color: #0053a1;">Copy to Spatial Coverage field</button>
     </div>
 </div>
