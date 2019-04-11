@@ -3,7 +3,7 @@ CNRA Schema
 
 Requirements
 ------------
-Requires [ckanext-scheming](https://github.com/ckan/ckanext-scheming)
+Requires [ckanext-scheming](https://github.com/ckan/ckanext-scheming), [ckanext-composite](https://github.com/OpenGov-OpenData/ckanext-composite), [ckanext-repeating](https://github.com/OpenGov-OpenData/ckanext-repeating)
 
 
 Installation
@@ -20,5 +20,5 @@ Config settings
 ---------------
 ```ini
 
-ckan.plugins = ... cnra_schema scheming_datasets
+ckan.plugins = ... cnra_schema scheming_datasets composite repeating
 ```
