@@ -1,0 +1,203 @@
+<div class="control-group control-full">
+    <label class="control-label" for="field-{{ field.field_name }}">{{ field.label }}</label>
+    <div class="controls editor">
+        <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
+        <script type="text/javascript">
+            window.addEventListener("load", function() {
+                // specific to CNRA's usage: specify the names of input fields and custom fields
+                // which will be filled in with the full GeoJSON and/or just the bounds
+                var load_geojson_field = '{{ field.load_geojson_field }}';
+                var geojson_field = '{{ field.geojson_field }}';
+                var extent_field = '{{ field.extent_field }}';
+                var geojson_field_custom = '{{ field.geojson_field_custom }}';
+                var extent_field_custom = '{{ field.extent_field_custom }}';
+                var spatial_coverage_textbox = '{{ field.spatial_coverage_textbox }}';
+
+                // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
+                // so here's a helper function
+                var bounds2shape = function (bounds) {
+                    return {
+                        type: "Polygon",
+                        coordinates: [[
+                            [ bounds.w, bounds.s ],
+                            [ bounds.w, bounds.n ],
+                            [ bounds.e, bounds.n ],
+                            [ bounds.e, bounds.s ],
+                            [ bounds.w, bounds.s ]
+                        ]],
+                    };
+                };
+
+                // helper functions to find/set a value for a Custom Field
+                var update_or_create_custom_field = function (fieldname, value) {
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    if (! customfields) {
+                        console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
+                        alert("Could not find custom fields section to save " + fieldname + " value.");
+                    }
+
+                    var didanddone = false, firstemptylblfield = null, firstemptyvalfield = null;
+                    Array.prototype.slice.call(customfields).forEach(function (fieldrow) {
+                        var lblfield = fieldrow.querySelectorAll('input[type="text"]')[0];
+                        var valfield = fieldrow.querySelectorAll('input[type="text"]')[1];
+
+                        if (lblfield.value == fieldname) {
+                            valfield.value = value;
+                            didanddone = true;
+                        }
+                        else if (! lblfield.value && ! firstemptylblfield) {
+                            firstemptyvalfield = valfield;
+                            firstemptylblfield = lblfield;
+                        }
+                    });
+
+                    if (! didanddone) {
+                        if (firstemptylblfield) {
+                            firstemptylblfield.value = fieldname;
+                            firstemptyvalfield.value = value;
+                        }
+                        else {
+                            console.error("GazetteerWidget could not find a blank Custom Field to create the new " + fieldname + " value.");
+                        }
+                    }
+                };
+                var get_custom_field_value = function (fieldname) {
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    if (! customfields) {
+                        console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
+                        alert("Could not find custom fields section to save " + fieldname + " value.");
+                    }
+
+                    var foundvalue;
+                    Array.prototype.slice.call(customfields).forEach(function (fieldrow) {
+                        var lblfield = fieldrow.querySelectorAll('input[type="text"]')[0];
+                        var valfield = fieldrow.querySelectorAll('input[type="text"]')[1];
+                        if (lblfield.value == fieldname) {
+                            foundvalue = valfield.value;
+                        }
+                    });
+                    return foundvalue;
+                };
+
+                var widget = new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+                    showBoundingBox: true,
+                    labelBoxCorners: true,
+                    autoZoomBoundingBox: true,
+                    minZoom: 4,
+                    title: 'Define Bounding Box',
+                    introhtml: '<p>Use this tool to specify the coverage area of your data.</p><p>Uploading GeoJSON? Then no need to use this. We will get the extent automatically.</p>',
+                    onLoad: function () {
+                        // on load, look for the load_geojson_field field and try to load its content as a GeoJSON string
+                        // it may be invalid or blank; try to be graceful about that
+                        var jsonfieldid = 'field-' + load_geojson_field;
+                        var jsonfield = document.getElementById(jsonfieldid);
+                        if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
+
+                        var jsontext = jsonfield.value.trim();
+                        if (jsontext) {
+                            this.loadGeoJsonString(jsontext);
+                            return;
+                        }
+
+                        // if that was blank, then check the extent_field and extent_field_custom fields
+                        // if we find content there, it's GeoJSON representing a single Box which we should pre-load
+                        var onesingleboxgeojson = null;
+                        if (extent_field) {
+                            var bboxfieldid = 'field-' + extent_field;
+                            var bboxfield = document.getElementById(bboxfieldid);
+                            if (! bboxfield) console.error("GazetteerWidget could not find extent_field with id " + bboxfieldid);
+                            onesingleboxgeojson = bboxfield.value;
+                        }
+                        else if (extent_field_custom) {
+                            onesingleboxgeojson = get_custom_field_value(extent_field_custom);
+                        }
+
+                        if (onesingleboxgeojson) {
+                            try {
+                                var loadthisonebox = {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "title": "Predefined Box"
+                                    },
+                                    "geometry": JSON.parse(onesingleboxgeojson)
+                                },
+                                loadthisonebox = { "type": "FeatureCollection", "features": [ loadthisonebox ] };
+                                this.loadGeoJsonObject(loadthisonebox);
+                            } catch (e) {
+                                // invalid JSON? whatever, do nothing
+                            }
+                        }
+                    },
+                    onChange: function (bboxinfo) {
+                        // find the input fields and/or custom fields
+                        // where we should set a value of the whole GeoJSON bboxinfo and/or just the bounds
+                        // e.g. so the drawn shapes and box are saved to their intended form fields or custom fields
+                        if (geojson_field) {
+                            var jsonfieldid = 'field-' + geojson_field;
+                            var jsonfield = document.getElementById(jsonfieldid);
+                            if (! jsonfield) console.error("GazetteerWidget could not find geojson_field with id " + jsonfieldid);
+                            else {
+                                jsonfield.value = bboxinfo ? JSON.stringify(bboxinfo) : '';
+                            }
+                        }
+                        if (extent_field) {
+                            var bboxfieldid = 'field-' + extent_field;
+                            var bboxfield = document.getElementById(bboxfieldid);
+                            if (! bboxfield) console.error("GazetteerWidget could not find extent_field with id " + bboxfieldid);
+                            else {
+                                bboxfield.value = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
+                            }
+                        }
+
+                        if (geojson_field_custom) {
+                            var gjvalue = bboxinfo ? JSON.stringify(bboxinfo) : '';
+                            update_or_create_custom_field(geojson_field_custom, gjvalue);
+                        }
+                        if (extent_field_custom) {
+                            var extvalue = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
+                            update_or_create_custom_field(extent_field_custom, extvalue);
+                        }
+                    }
+                });
+
+                // now the Copy to Spatial Coverage button, reading from the "widget" defined above
+                // we APEND to the existing field content, and try our best to not repeat a place already in there,
+                // e.g. if "Seattle, WA" is a point and "Seattle, WA." is in the text already, don't append it
+                // it's not at all wateright but is some convenience at least against re-adding our own points!
+                var copyplacenamesbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                var copyplacestextbox = document.getElementById('field-' + spatial_coverage_textbox);
+                if (spatial_coverage_textbox && copyplacenamesbutton && copyplacestextbox) {
+                    copyplacenamesbutton.addEventListener('click', function () {
+                        widget.listSelectedPlaces().forEach(function (place) {
+                            var thisplacename = place.title;
+
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Predefined Box') return;
+
+                            var already = copyplacestextbox.value.match(new RegExp(thisplacename, 'i'));
+                            if (already) return;
+
+                            // go for it
+                            copyplacestextbox.value += " " + thisplacename + ".";
+                        });
+                        copyplacestextbox.value = copyplacestextbox.value.trim();
+                    });
+                }
+                else if (! spatial_coverage_textbox) {
+                    // widget is not configured with a field; hide this button and be done with it
+                    copyplacenamesbutton.style.display = 'none';
+                }
+                else if (! copyplacenamesbutton) {
+                    // widget is configured but the button isn't in the template
+                    console.error("GazetteerWidget could not find spatial_coverage_textbox trigger button with id gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                }
+                else if (! copyplacestextbox) {
+                    // widget is configured but the specified field box doesn't exist
+                    console.error("GazetteerWidget could not find spatial_coverage_textbox with id " + spatial_coverage_textbox);
+                }
+            });
+        </script>
+        <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamesbutton" style="width: 225px; color: white; background-color: #0053a1;">Copy to Spatial Coverage field</button>
+    </div>
+</div>

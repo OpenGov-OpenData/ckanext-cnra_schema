@@ -1,0 +1,58 @@
+{%- if data['spatial_details'] and data['spatial_details'] -%}
+    <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
+    <script type="text/javascript">
+    window.addEventListener("load", function() {
+        var spatialdata = {{ data['spatial_details']|safe }};
+
+        new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+            displayOnly: true,
+            labelBoxCorners: true,
+            geocoderControl: false,
+            basemapControl: false,
+            showBoundingBox: true,
+            minZoom: 4,
+            onLoad: function () {
+                this.loadGeoJsonObject(spatialdata);
+            }
+        });
+    });
+    </script>
+    <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+{%- elif data['extras'] -%}
+    {% for customfield in data['extras'] %}
+        {% if customfield['key'] == 'spatial' and customfield['value'] %}            
+        <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
+        <script type="text/javascript">
+        window.addEventListener("load", function() {
+            var bboxdata = {{ customfield['value']|safe }};
+            var bboxgeojsondoc = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": bboxdata
+                    }
+                ]
+            };
+
+            new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+                displayOnly: true,
+                labelBoxCorners: true,
+                geocoderControl: false,
+                basemapControl: false,
+                showBoundingBox: true,
+                minZoom: 4,
+                onLoad: function () {
+                    this.loadGeoJsonObject(bboxgeojsondoc);
+                }
+            });
+        });
+        </script>
+        <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
+        {% endif %}
+    {% endfor %}
+{%- else -%}
+    Not specified.
+{%- endif -%}
