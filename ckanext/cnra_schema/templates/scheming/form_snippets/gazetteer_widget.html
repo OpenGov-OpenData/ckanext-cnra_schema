@@ -172,7 +172,7 @@
                         widget.listSelectedPlaces().forEach(function (place) {
                             var thisplacename = place.title;
 
-                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point') return;
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Predefined Box') return;
 
                             var already = copyplacestextbox.value.match(new RegExp(thisplacename, 'i'));
                             if (already) return;
@@ -180,6 +180,7 @@
                             // go for it
                             copyplacestextbox.value += " " + thisplacename + ".";
                         });
+                        copyplacestextbox.value = copyplacestextbox.value.trim();
                     });
                 }
                 else if (! spatial_coverage_textbox) {
