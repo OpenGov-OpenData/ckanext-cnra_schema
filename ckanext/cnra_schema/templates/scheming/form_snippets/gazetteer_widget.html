@@ -27,6 +27,9 @@
                 var extent_field = '{{ field.extent_field }}';
                 var extent_field_custom = '{{ field.extent_field_custom }}';
 
+                // should we write back to the bbox_composite_field whenever the extent changes?
+                var save_bbox_composite = '{{ field.save_bbox_composite }}' == 'True';
+
                 // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
                 // so here's a helper function
                 var bounds2shape = function (bounds) {
@@ -211,6 +214,33 @@
                             var extvalue = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
                             update_or_create_custom_field(extent_field_custom, extvalue);
                         }
+
+                        // update the Bounding Coordinate composite field (four text fields) if we' were inst're supposed to
+                        if (save_bbox_composite && bbox_composite_field && bbox_composite_field_s && bbox_composite_field_w && bbox_composite_field_n && bbox_composite_field_e) {
+                            var bbox_w_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_w);
+                            var bbox_s_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_s);
+                            var bbox_e_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_e);
+                            var bbox_n_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_n);
+                            if (! bbox_w_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_w);
+                            if (! bbox_s_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_s);
+                            if (! bbox_e_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_e);
+                            if (! bbox_n_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_n);
+
+                            if (bboxinfo) {
+                                bbox_w_field.value = bboxinfo.bounds.w.toFixed(5);
+                                bbox_s_field.value = bboxinfo.bounds.s.toFixed(5);
+                                bbox_e_field.value = bboxinfo.bounds.e.toFixed(5);
+                                bbox_n_field.value = bboxinfo.bounds.n.toFixed(5);
+                            }
+                            else {
+                                bbox_w_field.value = "";
+                                bbox_s_field.value = "";
+                                bbox_e_field.value = "";
+                                bbox_n_field.value = "";
+                            }
+                        }
+
+                        // done with onChange handler
                     }
                 });
 
