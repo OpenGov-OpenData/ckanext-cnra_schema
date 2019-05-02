@@ -300,6 +300,7 @@ dataset_fields:
   #                              You must also specify the sub-fields:
   #                              load_bbox_composite_south, load_bbox_composite_north, load_bbox_composite_east, and load_bbox_composite_west.
   #                              Sub-fields should be numeric fields. Any non-numeric data (empty fields, etc.) will cause the field to be ignored.
+  # save_bbox_composite -- Set this to "true" in order to have the widget automatically update the composite field with the new bounding box, whenever the extent changes.
   # geojson_field_custom -- Same as geojson_field,
   #                         but instead of a proper field, it's the name of a Custom Field to be found or created.
   # extent_field_custom -- Same as extent_field,
@@ -332,6 +333,7 @@ dataset_fields:
   load_bbox_composite_north: northBoundingCoordinate
   load_bbox_composite_east: eastBoundingCoordinate
   load_bbox_composite_west: westBoundingCoordinate
+  save_bbox_composite: true
 
 ## "spatial_coverage"
 - field_name: spatial_coverage
