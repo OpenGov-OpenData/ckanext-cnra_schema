@@ -30,6 +30,11 @@ dataset_fields:
   form_placeholder: eg. Some useful notes about the data
   required: True
 
+- field_name: purpose
+  label: Purpose
+  form_snippet: markdown.html
+  form_placeholder: A summary of the intentions with which the data set was developed
+
 ## "keywords"
 #  Use core CKAN free-form tag field
 - field_name: tag_string
@@ -42,6 +47,87 @@ dataset_fields:
 - field_name: owner_org
   label: Organization
   preset: dataset_organization
+
+## "publisher"
+- field_name: publisher
+  label: Publisher
+  form_snippet: text.html
+
+## "program"
+- field_name: program
+  label: Program
+  form_snippet: text.html
+  form_placeholder: Program or cross functional team name.
+  display_snippet: null
+
+## "url"
+#  Use core CKAN datase url field
+- field_name: url
+  label: Homepage URL
+  form_placeholder: URL for the page with useful information on the program creating the data.
+  display_property: foaf:homepage
+  display_snippet: link.html
+
+## "identification_information_citation"
+- field_name: idInfoCitation
+  label: Identification Information Citation
+  preset: composite
+  subfields:
+  - field_name: title
+    label: Title
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+  - field_name: publicationDate
+    label: Publication Date
+  - field_name: edition
+    label: Edition
+  - field_name: geospatialDataPresentationForm
+    label: Geospatial Data Presentation Form
+    help_text: "The mode in which the geospatial data are represented: atlas, audio, diagram, document, globe, map, model, multimedia presentation, profile, raster digital data, remote-sensing image, section, spreadsheet, tabular digital data, vector digital data, video, view, or free text"
+  - field_name: onlineLinkage
+    label: Online Linkage
+    preset: repeating_text
+    form_blanks: 2
+
+- field_name: credit
+  label: Credit
+
+## "frequency"
+- field_name: frequency
+  label: Frequency
+  preset: select
+  choices:
+  - label: Irregular
+    value: Irregular
+  - label: Daily
+    value: Daily
+  - label: Weekly
+    value: Weekly
+  - label: Monthly
+    value: Monthly
+  - label: Quarterly
+    value: Quarterly
+  - label: Semiannual
+    value: Semiannual
+  - label: Annual
+    value: Annual
+  - label: Decennial
+    value: Decennial
+  - label: Other
+    value: Other
+  display_snippet: select.html
+
+- field_name: maintenanceAndUpdateFrequency
+  label: Maintenance and Update Frequency
+  help_text: "The frequency with which changes and additions are made to the data set after the initial data set is completed: Continually, Daily, Weekly, Monthly, Annually, Unknown, As needed, Irregular, None planned, or free text"
+
+- field_name: progress
+  label: Progress
+
+- field_name: nativeDatasetEnvironment
+  label: Native Dataset Environment
 
 ## "contact_name"
 - field_name: contact_name
@@ -57,37 +143,149 @@ dataset_fields:
   display_snippet: email.html
   required: True
 
-## "public_access_level"
-- field_name: public_access_level
-  label: Public Access Level
-  preset: select
-  required: True
-  choices:
-  - label: Public
-    value: Public
-  - label: Restricted
-    value: Restricted
-  - label: Non-Public
-    value: Non-Public
+## "Point_of_Contact"
+- field_name: pointOfContact
+  label: Point of Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
 
-## "license_id"
-- field_name: license_id
-  label: License
-  form_snippet: license.html
-  help_text: License definitions and additional information can be found at http://opendefinition.org/
+## "Point_of_Contact_Address"
+- field_name: pointOfContactAddress
+  label: Point of Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
 
-## "program"
-- field_name: program
-  label: Program
-  form_snippet: text.html
-  form_placeholder: Program or cross functional team name.
-  display_snippet: null
+## "Metadata_Contact"
+- field_name: metadataContact
+  label: Metadata Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
 
+## "Metadata_Contact_Address"
+- field_name: metadataContactAddress
+  label: Metadata Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
+
+## "Time_Period_of_Content"
+- field_name: timePeriodOfContent
+  label: Time Period of Content
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: date
+    label: Date
+  - field_name: time
+    label: Time
+
+- field_name: beginningTimePeriodOfContent
+  label: Beginning Time Period of Content
+  preset: composite
+  subfields:
+  - field_name: date
+    label: Date
+  - field_name: time
+    label: Time
+
+- field_name: endingTimePeriodOfContent
+  label: Ending Time Period of Content
+  preset: composite
+  subfields:
+  - field_name: date
+    label: Date
+  - field_name: time
+    label: Time
+
+## "temporal_coverage"
+- field_name: temporal_coverage
+  label: Temporal Coverage
+  form_snippet: markdown.html
+  form_placeholder: Start and end time of events described in data.
+
+- field_name: temporalKeywords
+  label: Temporal Keywords
+  preset: tag_string_autocomplete
+
+- field_name: currentnessReference
+  label: Currentness Reference
+
+## https://github.com/OpenGov-OpenData/ckanext-cnra_schema/pull/6  April 17 2019, the widget should be disabled
+## Enabling these for development of the Gazetteer Widget display, for when it is broght into the website
 ## "gazetteer_widget"
 - field_name: gazetteer_widget
   label: Indicate Spatial Coverage
   form_snippet: gazetteer_widget.html
-  display_snippet: null  # for read-only mode, see spatial_details field which is the generated GeoJSON
+  display_snippet: null  # for read-only mode, see "spatial_details" field which is the generated GeoJSON
   #
   # config options joining the Gazetteer Widget to other fields
   # load_geojson_field -- A field to check for GeoJSON content, and load as at startup.
@@ -121,6 +319,8 @@ dataset_fields:
   form_snippet: markdown.html
   form_placeholder: Name of defined area or geometry of area data describes.
 
+## https://github.com/OpenGov-OpenData/ckanext-cnra_schema/pull/6  April 17 2019, the widget should be disabled
+## Enabling these for development of the Gazetteer Widget display, for when it is broght into the website
 ## "spatial_details"
 - field_name: spatial_details
   label: Spatial Coverage Details
@@ -129,50 +329,301 @@ dataset_fields:
   display_snippet: spatial_details.html
   validators: scheming_required scheming_valid_json_object
 
-## "temporal_coverage"
-- field_name: temporal_coverage
-  label: Temporal Coverage
-  form_snippet: markdown.html
-  form_placeholder: Start and end time of events described in data.
+- field_name: geographicExtentDescription
+  label: Description of Geographic Extent
 
-## "frequency"
-- field_name: frequency
-  label: Frequency
+- field_name: placeKeywords
+  label: Place Keywords
+  preset: tag_string_autocomplete
+
+## "bounding_coordinate"
+- field_name: boundingCoordinate
+  label: Bounding Coordinate
+  preset: composite
+  subfields:
+  - field_name: northBoundingCoordinate
+    label: North Bounding Coordinate
+  - field_name: eastBoundingCoordinate
+    label: East Bounding Coordinate
+  - field_name: southBoundingCoordinate
+    label: South Bounding Coordinate
+  - field_name: westBoundingCoordinate
+    label: West Bounding Coordinate
+
+- field_name: mapProjectionName
+  label: Map Projection Name
+
+- field_name: horizontalDatumName
+  label: Horizontal Datum Name
+
+- field_name: stratumKeywords
+  label: Stratum Keywords
+  preset: tag_string_autocomplete
+
+## "bounding_altitudes"
+- field_name: boundingAltitudes
+  label: Bounding Altitudes
+  preset: composite
+  subfields:
+  - field_name: altitudeMinimum
+    label: Altitude Minimum
+  - field_name: altitudeMaximum
+    label: Altitude Maximum
+  - field_name: altitudeDistanceUnits
+    label: Altitude Distance Units
+
+- field_name: planarCoordinateInformation
+  label: Planar Coordinate Information
+  preset: composite
+  subfields:
+  - field_name: planarCoordinateEncodingMethod
+    label: Planar Coordinate Encoding Method
+  - field_name: abscissaResolution
+    label: Abscissa Resolution
+  - field_name: ordinateResolution
+    label: Ordinate Resolution
+  - field_name: planarDistanceUnits
+    label: Planar Distance Units
+
+## "Data Quality Information Lineage Citation"
+- field_name: lineageCitation
+  label: Lineage Citation
+  preset: composite
+  subfields:
+  - field_name: title
+    label: Title
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+  - field_name: publicationDate
+    label: Publication Date
+  - field_name: geospatialDataPresentationForm
+    label: Geospatial Data Presentation Form
+    help_text: "The mode in which the geospatial data are represented: atlas, audio, diagram, document, globe, map, model, multimedia presentation, profile, raster digital data, remote-sensing image, section, spreadsheet, tabular digital data, vector digital data, video, view, or free text"
+
+- field_name: sourceScaleDenominator
+  label: Source Scale Denominator
+
+- field_name: typeOfSourceMedia
+  label: Type of Source Media
+
+- field_name: sourceCurrentnessReference
+  label: Source Currentness Reference
+
+- field_name: sourceCitationAbbreviation
+  label: Source Citation Abbreviation
+
+- field_name: completenessReport
+  label: Completeness Report
+
+- field_name: attributeAccuracyReport
+  label: Attribute Accuracy Report
+
+- field_name: taxonKeywords
+  label: Taxonomic Keywords
+  preset: tag_string_autocomplete
+
+## "Taxonomy Classification System Citation"
+- field_name: classSysCitation
+  label: Taxonomic System Citation
+  preset: composite
+  subfields:
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+
+## "Taxonomy Identifier Contact"
+- field_name: iderContact
+  label: Identifier Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
+
+## "Taxonomy Identifier Contact Address"
+- field_name: iderContactAddress
+  label: Identifier Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
+
+## "Taxonomy Identification Reference Citation"
+- field_name: idRefCitation
+  label: Taxonomic System Identification Reference Citation
+  preset: composite
+  subfields:
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+
+- field_name: vouchersSpecimen
+  label: Vouchers Specimen
+
+## "Taxonomy Vouchers Contact"
+- field_name: vouchersContact
+  label: Vouchers Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
+
+## "Taxonomy Vouchers Contact Address"
+- field_name: vouchersContactAddress
+  label: Vouchers Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
+
+## "Geologic_Age"
+- field_name: geologicAge
+  label: Geologic Age
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: geologicTimeScale
+    label: Geologic Time Scale
+  - field_name: geologicAgeEstimate
+    label: Geologic Age Estimate
+  - field_name: geologicAgeUncertainty
+    label: Geologic Age Uncertainty
+  - field_name: geologicAgeExplanation
+    label: Geologic Age Explanation
+
+- field_name: beginningGeologicAge
+  label: Beginning Geologic Age
+  preset: composite
+  subfields:
+  - field_name: geologicTimeScale
+    label: Geologic Time Scale
+  - field_name: geologicAgeEstimate
+    label: Geologic Age Estimate
+  - field_name: geologicAgeUncertainty
+    label: Geologic Age Uncertainty
+  - field_name: geologicAgeExplanation
+    label: Geologic Age Explanation
+
+- field_name: endingGeologicAge
+  label: Ending Geologic Age
+  preset: composite
+  subfields:
+  - field_name: geologicTimeScale
+    label: Geologic Time Scale
+  - field_name: geologicAgeEstimate
+    label: Geologic Age Estimate
+  - field_name: geologicAgeUncertainty
+    label: Geologic Age Uncertainty
+  - field_name: geologicAgeExplanation
+    label: Geologic Age Explanation
+
+- field_name: geologicCitation
+  label: Geologic Citation
+  preset: composite
+  subfields:
+  - field_name: title
+    label: Title
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+  - field_name: publicationDate
+    label: Publication Date
+  - field_name: geospatialDataPresentationForm
+    label: Geospatial Data Presentation Form
+    help_text: "The mode in which the geospatial data are represented: atlas, audio, diagram, document, globe, map, model, multimedia presentation, profile, raster digital data, remote-sensing image, section, spreadsheet, tabular digital data, vector digital data, video, view, or free text"
+  - field_name: sername
+    label: Series Name
+  - field_name: issue
+    label: Issue Identification
+  - field_name: onlineLinkage
+    label: Online Linkage
+    preset: repeating_text
+    form_blanks: 2
+
+## "public_access_level"
+- field_name: public_access_level
+  label: Public Access Level
   preset: select
+  required: True
   choices:
-  - label: Irregular
-    value: Irregular
-  - label: Daily
-    value: Daily
-  - label: Weekly
-    value: Weekly
-  - label: Monthly
-    value: Monthly
-  - label: Quarterly
-    value: Quarterly
-  - label: Semiannual
-    value: Semiannual
-  - label: Annual
-    value: Annual
-  - label: Decennial
-    value: Decennial
-  - label: Other
-    value: Other
-  display_snippet: select.html
+  - label: Public
+    value: Public
+  - label: Restricted
+    value: Restricted
+  - label: Non-Public
+    value: Non-Public
 
-## "language"
-- field_name: language
-  label: Language
-  form_snippet: text.html
-  form_placeholder: English
-
-## "url"
-#  Use core CKAN datase url field
-- field_name: url
-  label: Homepage URL
-  form_placeholder: URL for the page with useful information on the program creating the data.
-  display_property: foaf:homepage
-  display_snippet: link.html
+## "license_id"
+- field_name: license_id
+  label: License
+  form_snippet: license.html
+  help_text: License definitions and additional information can be found at http://opendefinition.org/
 
 ## "limitations"
 - field_name: limitations
@@ -180,10 +631,67 @@ dataset_fields:
   form_snippet: markdown.html
   form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
 
-## "publisher"
-- field_name: publisher
-  label: Publisher
+#- field_name: accessConstraints
+#  label: Access Constraints
+
+- field_name: useConstraints
+  label: Use Constraints
+
+- field_name: distributionLiability
+  label: Distribution Liability
+
+## "Distributor_Contact"
+- field_name: distributorContact
+  label: Distributor Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
+
+## "Distributor_Contact_Address"
+- field_name: distributorContactAddress
+  label: Distributor Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
+
+## "language"
+- field_name: language
+  label: Language
   form_snippet: text.html
+  form_placeholder: English
 
 
 ## CKAN Resource Fields
@@ -215,3 +723,13 @@ resource_fields:
   label: Data Standard
   form_snippet: text.html
   form_placeholder: Established file structure defined for a particular use.
+
+- field_name: attribute
+  label: Attribute
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: attributeLabel
+    label: Attribute Label
+  - field_name: attributeDefinition
+    label: Attribute Definition
