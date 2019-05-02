@@ -13,8 +13,9 @@
                 var geojson_field = '{{ field.geojson_field }}';
                 var geojson_field_custom = '{{ field.geojson_field_custom }}';
 
-                // descriptive text will be written to this text field
+                // place names will be copies to this text field and/or this tag field
                 var spatial_coverage_textbox = '{{ field.spatial_coverage_textbox }}';
+                var spatial_coverage_tagfield = '{{ field.spatial_coverage_tagfield }}';
 
                 // these fields will be checked for data to pre-load into the map
                 var load_geojson_field = '{{ field.load_geojson_field }}';
@@ -213,18 +214,19 @@
                     }
                 });
 
-                // now the Copy to Spatial Coverage button, reading from the "widget" defined above
-                // we APEND to the existing field content, and try our best to not repeat a place already in there,
-                // e.g. if "Seattle, WA" is a point and "Seattle, WA." is in the text already, don't append it
-                // it's not at all wateright but is some convenience at least against re-adding our own points!
-                var copyplacenamesbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                // optional additional UI components
+
+                {% if field['spatial_coverage_textbox'] and field['spatial_coverage_textbox_buttontext'] %}
+                // Copy to Coverage Text button
+                // read place names from the widget, append them to the existing text field content
+                // try our best to not repeat a place already in there, but with free-form text it won't be watertight
+                var copyplacenamestotextbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamestotextbutton");
                 var copyplacestextbox = document.getElementById('field-' + spatial_coverage_textbox);
-                if (spatial_coverage_textbox && copyplacenamesbutton && copyplacestextbox) {
-                    copyplacenamesbutton.addEventListener('click', function () {
+                if (spatial_coverage_textbox && copyplacenamestotextbutton && copyplacestextbox) {
+                    copyplacenamestotextbutton.addEventListener('click', function () {
                         widget.listSelectedPlaces().forEach(function (place) {
                             var thisplacename = place.title;
-
-                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Predefined Box') return;
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Coordinate Box' || thisplacename == 'Predefined Box') return;
 
                             var already = copyplacestextbox.value.match(new RegExp(thisplacename, 'i'));
                             if (already) return;
@@ -235,21 +237,56 @@
                         copyplacestextbox.value = copyplacestextbox.value.trim();
                     });
                 }
-                else if (! spatial_coverage_textbox) {
-                    // widget is not configured with a field; hide this button and be done with it
-                    copyplacenamesbutton.style.display = 'none';
-                }
-                else if (! copyplacenamesbutton) {
-                    // widget is configured but the button isn't in the template
-                    console.error("GazetteerWidget could not find spatial_coverage_textbox trigger button with id gazetteer-{{ field.field_name }}-copyplacenamesbutton");
-                }
                 else if (! copyplacestextbox) {
                     // widget is configured but the specified field box doesn't exist
                     console.error("GazetteerWidget could not find spatial_coverage_textbox with id " + spatial_coverage_textbox);
                 }
+                {% endif %}
+
+                {% if field['spatial_coverage_tagfield'] and field['spatial_coverage_tagfield_buttontext'] %}
+                // Copy to Coverage Tags button
+                // read place names from the widget, append them to the autocomplete/tagging UI content
+                // try our best to not repeat a place already in there, but with free-form text it won't be watertight
+                // tech note: the tag UI used by ckanext-composite is Select2 which is implicitly jQuery
+                var copyplacenamestotagsbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamestotagsbutton");
+                var copyplacestagsbox = document.getElementById('field-' + spatial_coverage_tagfield);
+                if (spatial_coverage_tagfield && copyplacenamestotagsbutton && copyplacestagsbox) {
+                    copyplacenamestotagsbutton.addEventListener('click', function () {
+                        widget.listSelectedPlaces().forEach(function (place) {
+                            var thisplacename = place.title;
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Coordinate Box' || thisplacename == 'Predefined Box') return;
+
+                            // in this use case, each option's 'id' is simply the same as its 'text' so not really a usable slug
+                            // also, we're targeting ancient IE so don't use filter() and map()
+                            const $tagbox = jQuery(copyplacestagsbox);
+
+                            var already = $tagbox.select2('data');
+                            for (var i=0, l=already.length; i<l; i++) already[i] = already[i].text;
+                            if (already.indexOf(thisplacename) != -1) return;
+
+                            // weird, unsupported use of Select2 on a text field where we assign values by list
+                            var newvalues = already.slice();
+                            newvalues.push(thisplacename);
+                            $tagbox.val(newvalues).change();
+                        });
+                    });
+                }
+                else if (! copyplacestextbox) {
+                    // widget is configured but the specified field box doesn't exist
+                    console.error("GazetteerWidget could not find spatial_coverage_tagfield with id " + spatial_coverage_tagfield);
+                }
+                {% endif %}
             });
         </script>
+
         <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
-        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamesbutton" style="width: 225px; color: white; background-color: #0053a1;">Copy to Spatial Coverage field</button>
+
+        {% if field['spatial_coverage_textbox'] and field['spatial_coverage_textbox_buttontext'] %}
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamestotextbutton" style="width: 225px; color: white; background-color: #0053a1;">{{ field.spatial_coverage_textbox_buttontext }}</button>
+        {% endif %}
+
+        {% if field['spatial_coverage_tagfield'] and field['spatial_coverage_tagfield_buttontext'] %}
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamestotagsbutton" style="width: 225px; color: white; background-color: #0053a1;">{{ field.spatial_coverage_tagfield_buttontext }}</button>
+        {% endif %}
     </div>
 </div>
