@@ -7,12 +7,24 @@
             window.addEventListener("load", function() {
                 // specific to CNRA's usage: specify the names of input fields and custom fields
                 // which will be filled in with the full GeoJSON and/or just the bounds
-                var load_geojson_field = '{{ field.load_geojson_field }}';
+                // see the dataset.yaml for a full description of these configuration options,
+
+                // generated GeoJSON will be saved to this field, either a real field or a custom field
                 var geojson_field = '{{ field.geojson_field }}';
-                var extent_field = '{{ field.extent_field }}';
                 var geojson_field_custom = '{{ field.geojson_field_custom }}';
-                var extent_field_custom = '{{ field.extent_field_custom }}';
+
+                // descriptive text will be written to this text field
                 var spatial_coverage_textbox = '{{ field.spatial_coverage_textbox }}';
+
+                // these fields will be checked for data to pre-load into the map
+                var load_geojson_field = '{{ field.load_geojson_field }}';
+                var bbox_composite_field = '{{ field.load_bbox_composite_field }}';
+                var bbox_composite_field_s = '{{ field.load_bbox_composite_south }}';
+                var bbox_composite_field_n = '{{ field.load_bbox_composite_north }}';
+                var bbox_composite_field_e = '{{ field.load_bbox_composite_east }}';
+                var bbox_composite_field_w  = '{{ field.load_bbox_composite_west }}';
+                var extent_field = '{{ field.extent_field }}';
+                var extent_field_custom = '{{ field.extent_field_custom }}';
 
                 // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
                 // so here's a helper function
@@ -92,7 +104,7 @@
                         // it may be invalid or blank; try to be graceful about that
                         var jsonfieldid = 'field-' + load_geojson_field;
                         var jsonfield = document.getElementById(jsonfieldid);
-                        if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
+                        if (! jsonfield) console.error("GazetteerWidget could not find load_geojson_field with id " + load_geojson_field);
 
                         var jsontext = jsonfield.value.trim();
                         if (jsontext) {
@@ -100,7 +112,47 @@
                             return;
                         }
 
-                        // if that was blank, then check the extent_field and extent_field_custom fields
+                        // nothing there?
+                        // try the four sub-fields of the load_bbox_composite_field, if given
+                        // unlike regular fields, the input IDs lack a field- prefix
+                        if (bbox_composite_field && bbox_composite_field_s && bbox_composite_field_w && bbox_composite_field_n && bbox_composite_field_e) {
+                            var bbox_w_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_w);
+                            var bbox_s_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_s);
+                            var bbox_e_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_e);
+                            var bbox_n_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_n);
+                            if (! bbox_w_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_w);
+                            if (! bbox_s_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_s);
+                            if (! bbox_e_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_e);
+                            if (! bbox_n_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_n);
+
+                            var w = parseFloat(bbox_w_field.value);
+                            var s = parseFloat(bbox_s_field.value);
+                            var e = parseFloat(bbox_e_field.value);
+                            var n = parseFloat(bbox_n_field.value);
+
+                            if (! isNaN(w) && ! isNaN(s) && ! isNaN(e) && ! isNaN(n)) {
+                                try {
+                                    var loadthisonebox = {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "title": "Coordinate Box"
+                                        },
+                                        "geometry": {
+                                            "type":"Polygon",
+                                            "coordinates":[[[w, s],[w, n],[e, n],[e, s],[w, s]]]
+                                        },
+                                    },
+                                    loadthisonebox = { "type": "FeatureCollection", "features": [ loadthisonebox ] };
+                                    this.loadGeoJsonObject(loadthisonebox);
+                                    return;
+                                } catch (e) {
+                                    // invalid JSON? whatever, do nothing
+                                }
+                            }
+                        }
+
+                        // still nothing?
+                        // check the extent_field and extent_field_custom fields
                         // if we find content there, it's GeoJSON representing a single Box which we should pre-load
                         var onesingleboxgeojson = null;
                         if (extent_field) {
