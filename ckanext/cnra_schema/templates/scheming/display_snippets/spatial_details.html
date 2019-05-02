@@ -3,9 +3,11 @@
     <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
     <script type="text/javascript">
     window.addEventListener("load", function() {
+        var widgetdivid = 'gazetteer-{{ field.field_name }}';
+
         var spatialdata = {{ data['spatial_details']|safe }};
 
-        new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+        new CNRA.GazetteerWidget(widgetdivid, {
             displayOnly: true,
             labelBoxCorners: true,
             geocoderControl: false,
@@ -24,12 +26,13 @@
         <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
         <script type="text/javascript">
         window.addEventListener("load", function() {
+            var widgetdivid = 'gazetteer-{{ field.field_name }}';
+
             var bboxdata = {{ data['boundingCoordinate']|safe }};  // these fields allow text or blanks; be strict to ensure that we have 4 floats
-            if (! bboxdata.eastBoundingCoordinate || ! bboxdata.westBoundingCoordinate || ! bboxdata.northBoundingCoordinate || ! bboxdata.southBoundingCoordinate) return;
-            var s = parseFloat(bboxdata.southBoundingCoordinate); if (isNaN(s)) return;
-            var w = parseFloat(bboxdata.westBoundingCoordinate);  if (isNaN(w)) return;
-            var n = parseFloat(bboxdata.northBoundingCoordinate); if (isNaN(n)) return;
-            var e = parseFloat(bboxdata.eastBoundingCoordinate);  if (isNaN(e)) return;
+            var s = parseFloat(bboxdata.southBoundingCoordinate); if (isNaN(s)) return document.getElementById(widgetdivid).style.display = 'none';
+            var w = parseFloat(bboxdata.westBoundingCoordinate);  if (isNaN(w)) return document.getElementById(widgetdivid).style.display = 'none';
+            var n = parseFloat(bboxdata.northBoundingCoordinate); if (isNaN(n)) return document.getElementById(widgetdivid).style.display = 'none'
+            var e = parseFloat(bboxdata.eastBoundingCoordinate);  if (isNaN(e)) return document.getElementById(widgetdivid).style.display = 'none';
 
             var bboxgeojsondoc = {
                 "type": "FeatureCollection",
@@ -44,7 +47,7 @@
                 ]
             };
 
-            new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+            new CNRA.GazetteerWidget(widgetdivid, {
                 displayOnly: true,
                 labelBoxCorners: true,
                 geocoderControl: false,
@@ -65,6 +68,8 @@
         <link rel="stylesheet" type="text/css" href="https://greeninfo-network.github.io/cnra-gazetteer/api/api.css" />
         <script type="text/javascript">
         window.addEventListener("load", function() {
+            var widgetdivid = 'gazetteer-{{ field.field_name }}';
+
             var bboxdata = {{ customfield['value']|safe }};
             var bboxgeojsondoc = {
                 "type": "FeatureCollection",
@@ -76,7 +81,7 @@
                 ]
             };
 
-            new CNRA.GazetteerWidget('gazetteer-{{ field.field_name }}', {
+            new CNRA.GazetteerWidget(widgetdivid, {
                 displayOnly: true,
                 labelBoxCorners: true,
                 geocoderControl: false,
