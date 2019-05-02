@@ -305,9 +305,11 @@ dataset_fields:
   # extent_field_custom -- Same as extent_field,
   #                        but instead of a proper field, it's the name of a Custom Field to be found or created.
   # spatial_coverage_textbox -- A markdown/text field to populate with the names of list of selected places.
-  #                             Specific to this template use case, is a "Copy to Spatial Coverage field" button.
-  #                             When clicked, this button will append to the specified textbox, the list of selected areas.
-  #                             This provides a plain-text readout of areas, which can be useful for keyword searching.
+  #                             A button will be created, and clicking this will replace the text field content with a list of selected areas.
+  #                             The spatial_coverage_tagfield_buttontext option specifies the text of the button.
+  # spatial_coverage_tagfield -- A autocomplete/Select2 field to populate with tags listing the selected places.
+  #                              This is similar in ida to the spatial_coverage_textbox, but instead of a text box a tag entry UI is expected.
+  #                              The spatial_coverage_textbox_buttontext option specifies the text of the button.
   #
   # As described above, the spatial data may be loaded from several potential fields.
   # In manage mode this widget will check for some data to pre-populate itself. These fields will be checked, in this order of preference:
@@ -321,7 +323,10 @@ dataset_fields:
   #extent_field: bboxgeometry
   #geojson_field_custom: customjson
   extent_field_custom: spatial
-  spatial_coverage_textbox: spatial_coverage
+  #spatial_coverage_textbox: spatial_coverage
+  #spatial_coverage_textbox_buttontext: Copy to Spatial Coverage field
+  spatial_coverage_tagfield: placeKeywords
+  spatial_coverage_tagfield_buttontext: Copy to Place Keywords
   load_bbox_composite_field: boundingCoordinate
   load_bbox_composite_south: southBoundingCoordinate
   load_bbox_composite_north: northBoundingCoordinate
