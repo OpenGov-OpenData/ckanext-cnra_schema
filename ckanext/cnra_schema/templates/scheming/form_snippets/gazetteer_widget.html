@@ -1,4 +1,4 @@
-<div class="control-group control-full">
+<div class="control-group form-group control-full"><!-- CKAN 2.7 and 2.8 cmopatibility -->
     <label class="control-label" for="field-{{ field.field_name }}">{{ field.label }}</label>
     <div class="controls editor">
         <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
@@ -47,7 +47,7 @@
 
                 // helper functions to find/set a value for a Custom Field
                 var update_or_create_custom_field = function (fieldname, value) {
-                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-custom');
                     if (! customfields) {
                         console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
                         alert("Could not find custom fields section to save " + fieldname + " value.");
@@ -79,7 +79,7 @@
                     }
                 };
                 var get_custom_field_value = function (fieldname) {
-                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-custom');
                     if (! customfields) {
                         console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
                         alert("Could not find custom fields section to save " + fieldname + " value.");
