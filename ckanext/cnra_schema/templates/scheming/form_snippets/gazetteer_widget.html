@@ -1,4 +1,4 @@
-<div class="control-group control-full">
+<div class="control-group form-group control-full"><!-- CKAN 2.7 and 2.8 cmopatibility -->
     <label class="control-label" for="field-{{ field.field_name }}">{{ field.label }}</label>
     <div class="controls editor">
         <script type="text/javascript" src="https://greeninfo-network.github.io/cnra-gazetteer/api/api.js"></script>
@@ -7,12 +7,28 @@
             window.addEventListener("load", function() {
                 // specific to CNRA's usage: specify the names of input fields and custom fields
                 // which will be filled in with the full GeoJSON and/or just the bounds
-                var load_geojson_field = '{{ field.load_geojson_field }}';
+                // see the dataset.yaml for a full description of these configuration options,
+
+                // generated GeoJSON will be saved to this field, either a real field or a custom field
                 var geojson_field = '{{ field.geojson_field }}';
-                var extent_field = '{{ field.extent_field }}';
                 var geojson_field_custom = '{{ field.geojson_field_custom }}';
-                var extent_field_custom = '{{ field.extent_field_custom }}';
+
+                // place names will be copies to this text field and/or this tag field
                 var spatial_coverage_textbox = '{{ field.spatial_coverage_textbox }}';
+                var spatial_coverage_tagfield = '{{ field.spatial_coverage_tagfield }}';
+
+                // these fields will be checked for data to pre-load into the map
+                var load_geojson_field = '{{ field.load_geojson_field }}';
+                var bbox_composite_field = '{{ field.load_bbox_composite_field }}';
+                var bbox_composite_field_s = '{{ field.load_bbox_composite_south }}';
+                var bbox_composite_field_n = '{{ field.load_bbox_composite_north }}';
+                var bbox_composite_field_e = '{{ field.load_bbox_composite_east }}';
+                var bbox_composite_field_w  = '{{ field.load_bbox_composite_west }}';
+                var extent_field = '{{ field.extent_field }}';
+                var extent_field_custom = '{{ field.extent_field_custom }}';
+
+                // should we write back to the bbox_composite_field whenever the extent changes?
+                var save_bbox_composite = '{{ field.save_bbox_composite }}' == 'True';
 
                 // for CNRA specifically, when filling in the bounds into a field, they want GeoJSON feature.geometry format
                 // so here's a helper function
@@ -31,7 +47,7 @@
 
                 // helper functions to find/set a value for a Custom Field
                 var update_or_create_custom_field = function (fieldname, value) {
-                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-custom');
                     if (! customfields) {
                         console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
                         alert("Could not find custom fields section to save " + fieldname + " value.");
@@ -63,7 +79,7 @@
                     }
                 };
                 var get_custom_field_value = function (fieldname) {
-                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-group.control-custom');
+                    var customfields = document.querySelectorAll('div[data-module="custom-fields"] div.control-custom');
                     if (! customfields) {
                         console.error("GazetteerWidget could not find custom fields section to save " + fieldname + " value.");
                         alert("Could not find custom fields section to save " + fieldname + " value.");
@@ -92,7 +108,7 @@
                         // it may be invalid or blank; try to be graceful about that
                         var jsonfieldid = 'field-' + load_geojson_field;
                         var jsonfield = document.getElementById(jsonfieldid);
-                        if (! jsonfield) console.error("GazetteerWidget could not find find load_geojson_field with id " + load_geojson_field);
+                        if (! jsonfield) console.error("GazetteerWidget could not find load_geojson_field with id " + load_geojson_field);
 
                         var jsontext = jsonfield.value.trim();
                         if (jsontext) {
@@ -100,7 +116,47 @@
                             return;
                         }
 
-                        // if that was blank, then check the extent_field and extent_field_custom fields
+                        // nothing there?
+                        // try the four sub-fields of the load_bbox_composite_field, if given
+                        // unlike regular fields, the input IDs lack a field- prefix
+                        if (bbox_composite_field && bbox_composite_field_s && bbox_composite_field_w && bbox_composite_field_n && bbox_composite_field_e) {
+                            var bbox_w_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_w);
+                            var bbox_s_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_s);
+                            var bbox_e_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_e);
+                            var bbox_n_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_n);
+                            if (! bbox_w_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_w);
+                            if (! bbox_s_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_s);
+                            if (! bbox_e_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_e);
+                            if (! bbox_n_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_n);
+
+                            var w = parseFloat(bbox_w_field.value);
+                            var s = parseFloat(bbox_s_field.value);
+                            var e = parseFloat(bbox_e_field.value);
+                            var n = parseFloat(bbox_n_field.value);
+
+                            if (! isNaN(w) && ! isNaN(s) && ! isNaN(e) && ! isNaN(n)) {
+                                try {
+                                    var loadthisonebox = {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "title": "Coordinate Box"
+                                        },
+                                        "geometry": {
+                                            "type":"Polygon",
+                                            "coordinates":[[[w, s],[w, n],[e, n],[e, s],[w, s]]]
+                                        },
+                                    },
+                                    loadthisonebox = { "type": "FeatureCollection", "features": [ loadthisonebox ] };
+                                    this.loadGeoJsonObject(loadthisonebox);
+                                    return;
+                                } catch (e) {
+                                    // invalid JSON? whatever, do nothing
+                                }
+                            }
+                        }
+
+                        // still nothing?
+                        // check the extent_field and extent_field_custom fields
                         // if we find content there, it's GeoJSON representing a single Box which we should pre-load
                         var onesingleboxgeojson = null;
                         if (extent_field) {
@@ -158,21 +214,49 @@
                             var extvalue = bboxinfo ? JSON.stringify(bounds2shape(bboxinfo.bounds)) : '';
                             update_or_create_custom_field(extent_field_custom, extvalue);
                         }
+
+                        // update the Bounding Coordinate composite field (four text fields) if we' were inst're supposed to
+                        if (save_bbox_composite && bbox_composite_field && bbox_composite_field_s && bbox_composite_field_w && bbox_composite_field_n && bbox_composite_field_e) {
+                            var bbox_w_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_w);
+                            var bbox_s_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_s);
+                            var bbox_e_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_e);
+                            var bbox_n_field = document.getElementById(bbox_composite_field + '-' + bbox_composite_field_n);
+                            if (! bbox_w_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_w);
+                            if (! bbox_s_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_s);
+                            if (! bbox_e_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_e);
+                            if (! bbox_n_field) console.error("GazetteerWidget could not find composite bbox field " + bbox_composite_field + '-' + bbox_composite_field_n);
+
+                            if (bboxinfo) {
+                                bbox_w_field.value = bboxinfo.bounds.w.toFixed(5);
+                                bbox_s_field.value = bboxinfo.bounds.s.toFixed(5);
+                                bbox_e_field.value = bboxinfo.bounds.e.toFixed(5);
+                                bbox_n_field.value = bboxinfo.bounds.n.toFixed(5);
+                            }
+                            else {
+                                bbox_w_field.value = "";
+                                bbox_s_field.value = "";
+                                bbox_e_field.value = "";
+                                bbox_n_field.value = "";
+                            }
+                        }
+
+                        // done with onChange handler
                     }
                 });
 
-                // now the Copy to Spatial Coverage button, reading from the "widget" defined above
-                // we APEND to the existing field content, and try our best to not repeat a place already in there,
-                // e.g. if "Seattle, WA" is a point and "Seattle, WA." is in the text already, don't append it
-                // it's not at all wateright but is some convenience at least against re-adding our own points!
-                var copyplacenamesbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamesbutton");
+                // optional additional UI components
+
+                {% if field['spatial_coverage_textbox'] and field['spatial_coverage_textbox_buttontext'] %}
+                // Copy to Coverage Text button
+                // read place names from the widget, append them to the existing text field content
+                // try our best to not repeat a place already in there, but with free-form text it won't be watertight
+                var copyplacenamestotextbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamestotextbutton");
                 var copyplacestextbox = document.getElementById('field-' + spatial_coverage_textbox);
-                if (spatial_coverage_textbox && copyplacenamesbutton && copyplacestextbox) {
-                    copyplacenamesbutton.addEventListener('click', function () {
+                if (spatial_coverage_textbox && copyplacenamestotextbutton && copyplacestextbox) {
+                    copyplacenamestotextbutton.addEventListener('click', function () {
                         widget.listSelectedPlaces().forEach(function (place) {
                             var thisplacename = place.title;
-
-                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Predefined Box') return;
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Coordinate Box' || thisplacename == 'Predefined Box') return;
 
                             var already = copyplacestextbox.value.match(new RegExp(thisplacename, 'i'));
                             if (already) return;
@@ -183,21 +267,56 @@
                         copyplacestextbox.value = copyplacestextbox.value.trim();
                     });
                 }
-                else if (! spatial_coverage_textbox) {
-                    // widget is not configured with a field; hide this button and be done with it
-                    copyplacenamesbutton.style.display = 'none';
-                }
-                else if (! copyplacenamesbutton) {
-                    // widget is configured but the button isn't in the template
-                    console.error("GazetteerWidget could not find spatial_coverage_textbox trigger button with id gazetteer-{{ field.field_name }}-copyplacenamesbutton");
-                }
                 else if (! copyplacestextbox) {
                     // widget is configured but the specified field box doesn't exist
                     console.error("GazetteerWidget could not find spatial_coverage_textbox with id " + spatial_coverage_textbox);
                 }
+                {% endif %}
+
+                {% if field['spatial_coverage_tagfield'] and field['spatial_coverage_tagfield_buttontext'] %}
+                // Copy to Coverage Tags button
+                // read place names from the widget, append them to the autocomplete/tagging UI content
+                // try our best to not repeat a place already in there, but with free-form text it won't be watertight
+                // tech note: the tag UI used by ckanext-composite is Select2 which is implicitly jQuery
+                var copyplacenamestotagsbutton = document.getElementById("gazetteer-{{ field.field_name }}-copyplacenamestotagsbutton");
+                var copyplacestagsbox = document.getElementById('field-' + spatial_coverage_tagfield);
+                if (spatial_coverage_tagfield && copyplacenamestotagsbutton && copyplacestagsbox) {
+                    copyplacenamestotagsbutton.addEventListener('click', function () {
+                        widget.listSelectedPlaces().forEach(function (place) {
+                            var thisplacename = place.title;
+                            if (thisplacename == 'Drawn Box' || thisplacename == 'Clicked Point' || thisplacename == 'Coordinate Box' || thisplacename == 'Predefined Box') return;
+
+                            // in this use case, each option's 'id' is simply the same as its 'text' so not really a usable slug
+                            // also, we're targeting ancient IE so don't use filter() and map()
+                            const $tagbox = jQuery(copyplacestagsbox);
+
+                            var already = $tagbox.select2('data');
+                            for (var i=0, l=already.length; i<l; i++) already[i] = already[i].text;
+                            if (already.indexOf(thisplacename) != -1) return;
+
+                            // weird, unsupported use of Select2 on a text field where we assign values by list
+                            var newvalues = already.slice();
+                            newvalues.push(thisplacename);
+                            $tagbox.val(newvalues).change();
+                        });
+                    });
+                }
+                else if (! copyplacestextbox) {
+                    // widget is configured but the specified field box doesn't exist
+                    console.error("GazetteerWidget could not find spatial_coverage_tagfield with id " + spatial_coverage_tagfield);
+                }
+                {% endif %}
             });
         </script>
+
         <div id="gazetteer-{{ field.field_name }}" style="background-color: #ffffff; border: 1px solid #cccccc; box-shadow: inset 0 1px 1px rgba(0,0,0,0.075); border-radius: 3px;"></div>
-        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamesbutton" style="width: 225px; color: white; background-color: #0053a1;">Copy to Spatial Coverage field</button>
+
+        {% if field['spatial_coverage_textbox'] and field['spatial_coverage_textbox_buttontext'] %}
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamestotextbutton" style="width: 225px; color: white; background-color: #0053a1;">{{ field.spatial_coverage_textbox_buttontext }}</button>
+        {% endif %}
+
+        {% if field['spatial_coverage_tagfield'] and field['spatial_coverage_tagfield_buttontext'] %}
+        <button onClick="return false;" id="gazetteer-{{ field.field_name }}-copyplacenamestotagsbutton" style="width: 225px; color: white; background-color: #0053a1;">{{ field.spatial_coverage_tagfield_buttontext }}</button>
+        {% endif %}
     </div>
 </div>
