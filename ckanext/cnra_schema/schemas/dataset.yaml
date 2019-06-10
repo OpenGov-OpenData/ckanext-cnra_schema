@@ -341,63 +341,19 @@ dataset_fields:
   form_snippet: markdown.html
   form_placeholder: Name of defined area or geometry of area data describes.
 
-## https://github.com/OpenGov-OpenData/ckanext-cnra_schema/pull/6  April 17 2019, the widget should be disabled
-## Enabling these for development of the Gazetteer Widget display, for when it is broght into the website
-## "gazetteer_widget"
-- field_name: gazetteer_widget
-  label: Indicate Spatial Coverage
-  form_snippet: gazetteer_widget.html
-  display_snippet: null  # for read-only mode, see "spatial_details" field which is the generated GeoJSON
-  #
-  # config options joining the Gazetteer Widget to other fields
-  # load_geojson_field -- A field to check for GeoJSON content, and load as at startup.
-  #                       Great when set to the same as geojson_field, to load its own saved data.
-  # geojson_field -- A field to be updated when areas are changed.
-  #                  Content will be a GeoJSON document of the saved places.
-  #                  Great when set to the same as load_geojson_field, so saved data will be loaded at next startup.
-  #                  The specified field should be configured with JSON validation.
-  # extent_field -- A field to be updated when areas are changed.
-  #                 Content will be a single GeoJSON feature, its geometry being the polygonal bounding box of all selected areas.
-  #                 The specified field should be configured with JSON validation.
-  # load_bbox_composite_field -- A composite field to be examined, in order to provide the 4 sides of a bounding box.
-  #                              This will be a composite field with 4 sub-fields supplying the west, east, south, and north coordinates.
-  #                              You must also specify the sub-fields:
-  #                              load_bbox_composite_south, load_bbox_composite_north, load_bbox_composite_east, and load_bbox_composite_west.
-  #                              Sub-fields should be numeric fields. Any non-numeric data (empty fields, etc.) will cause the field to be ignored.
-  # save_bbox_composite -- Set this to "true" in order to have the widget automatically update the composite field with the new bounding box, whenever the extent changes.
-  # geojson_field_custom -- Same as geojson_field,
-  #                         but instead of a proper field, it's the name of a Custom Field to be found or created.
-  # extent_field_custom -- Same as extent_field,
-  #                        but instead of a proper field, it's the name of a Custom Field to be found or created.
-  # spatial_coverage_textbox -- A markdown/text field to populate with the names of list of selected places.
-  #                             A button will be created, and clicking this will replace the text field content with a list of selected areas.
-  #                             The spatial_coverage_tagfield_buttontext option specifies the text of the button.
-  # spatial_coverage_tagfield -- A autocomplete/Select2 field to populate with tags listing the selected places.
-  #                              This is similar in ida to the spatial_coverage_textbox, but instead of a text box a tag entry UI is expected.
-  #                              The spatial_coverage_textbox_buttontext option specifies the text of the button.
-  #
-  # As described above, the spatial data may be loaded from several potential fields.
-  # In manage mode this widget will check for some data to pre-populate itself. These fields will be checked, in this order of preference:
-  # - the field specified by "load_geojson_field"
-  # - the four sub-fields of the composite field specified by "load_bbox_composite_field"
-  # - the field specified by "extent_field"
-  # - the field specified by" extent_field_custom"
-  #
-  load_geojson_field: spatial_details
-  geojson_field: spatial_details
-  #extent_field: bboxgeometry
-  #geojson_field_custom: customjson
-  extent_field_custom: spatial
-  #spatial_coverage_textbox: spatial_coverage
-  #spatial_coverage_textbox_buttontext: Copy to Spatial Coverage field
-  spatial_coverage_tagfield: placeKeywords
-  spatial_coverage_tagfield_buttontext: Copy to Place Keywords
-  load_bbox_composite_field: boundingCoordinate
-  load_bbox_composite_south: southBoundingCoordinate
-  load_bbox_composite_north: northBoundingCoordinate
-  load_bbox_composite_east: eastBoundingCoordinate
-  load_bbox_composite_west: westBoundingCoordinate
-  save_bbox_composite: true
+## This is the view mode for displaying a simplified, read-only widget showing the location.
+## "spatial_details"
+- field_name: spatial_details
+  label: Spatial Coverage Details
+  form_snippet: text.html
+  form_placeholder: Filled in automatically as you select areas above.
+  # The spatial_details.html checks several fields, trying to find spatial information to display on a map.
+  # It checks the following fields, in this order of preference:
+  # - the "spatial_details" record field, which would contain a GeoJSON document createrd by the gazetteer_widget
+  # - the "boundingCoordinate" composite field, but only if all 4 fields contain numbers
+  # - the "spatial" custom fields, which would contain a bounding box polygon in GeoJSON format
+  display_snippet: spatial_details.html
+  validators: scheming_required scheming_valid_json_object
 
 - field_name: geographicExtentDescription
   label: Description of Geographic Extent
