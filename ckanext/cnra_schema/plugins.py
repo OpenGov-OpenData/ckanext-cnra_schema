@@ -1,6 +1,9 @@
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
-from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
+try:
+    from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
+except:
+    from ckanext.spatial.harvesters.base import guess_resource_format
 import json
 from markupsafe import Markup
 
