@@ -1,7 +1,6 @@
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
-from ckanext.spatial.harvesters.base import guess_resource_format
-#GDA the above imports from ckanext.spatial.harvesters.csw_fgdc which isn't a thing; maybe they run some local, custom plugins?
+from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 import json
 from markupsafe import Markup
 
@@ -18,6 +17,7 @@ class cnraSchema(SingletonPlugin):
 
         config['scheming.presets'] = """
 ckanext.scheming:presets.json
+ckanext.repeating:presets.json
 ckanext.composite:presets.json
 """
 
