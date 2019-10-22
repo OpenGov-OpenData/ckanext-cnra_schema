@@ -337,6 +337,20 @@ dataset_fields:
   load_bbox_composite_west: westBoundingCoordinate
   save_bbox_composite: true
 
+## This is the view mode for displaying a simplified, read-only widget showing the location.
+## "spatial_details"
+- field_name: spatial_details
+  label: Spatial Coverage
+  form_snippet: text.html
+  form_placeholder: Filled in automatically as you select areas above.
+  # The spatial_details.html checks several fields, trying to find spatial information to display on a map.
+  # It checks the following fields, in this order of preference:
+  # - the "spatial_details" record field, which would contain a GeoJSON document createrd by the gazetteer_widget
+  # - the "boundingCoordinate" composite field, but only if all 4 fields contain numbers
+  # - the "spatial" custom fields, which would contain a bounding box polygon in GeoJSON format
+  display_snippet: spatial_details.html
+  validators: scheming_required scheming_valid_json_object
+
 - field_name: geographicExtentDescription
   label: Description of Geographic Extent
 
