@@ -337,13 +337,6 @@ dataset_fields:
   load_bbox_composite_west: westBoundingCoordinate
   save_bbox_composite: true
 
-## "spatial_coverage"
-- field_name: spatial_coverage
-  label: Spatial Coverage
-  form_snippet: markdown.html
-  form_placeholder: Name of defined area or geometry of area data describes.
-
-
 - field_name: geographicExtentDescription
   label: Description of Geographic Extent
 
