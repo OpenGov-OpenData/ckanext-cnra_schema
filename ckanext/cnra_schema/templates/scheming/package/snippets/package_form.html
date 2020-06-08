@@ -15,20 +15,22 @@
         entity_type='dataset', object_type=dataset_type -%}
     {%- endif -%}
   {%- endfor -%}
-  <div class="additional_metadata">
-  	{%- for field in schema.dataset_fields[19:] -%}
-    {%- if field.form_snippet is not none -%}
+  <div class="accordion-toggle" data-toggle="collapse" href="#collapse-Metadata">
+    <h2 class="accordion-heading">Additional Fields</h2>
+  </div>
+  <div id=collapse-Metadata class="collapse accordion-body">
+    {%- for field in schema.dataset_fields[19:] -%}
+      {%- if field.form_snippet is not none -%}
       {%- snippet 'scheming/snippets/form_field.html',
         field=field, data=data, errors=errors, licenses=c.licenses,
         entity_type='dataset', object_type=dataset_type -%}
-    {%- endif -%}
-  {%- endfor -%}
-  </div>
+      {%- endif -%}
+    {%- endfor -%}
 
-  {%- if 'resource_fields' not in schema -%}
-    <!-- force controller to skip resource-editing step for this type -->
-    <input type="hidden" name="_ckan_phase" value="" />
-  {%- endif -%}
+    {%- if 'resource_fields' not in schema -%}
+      <!-- force controller to skip resource-editing step for this type -->
+      <input type="hidden" name="_ckan_phase" value="" />
+    {%- endif -%}
 {% endblock %}
 
 {% block metadata_fields %}
@@ -37,4 +39,5 @@
       {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
     {% endblock %}
   {% endblock %}
+  </div>  
 {% endblock %}
