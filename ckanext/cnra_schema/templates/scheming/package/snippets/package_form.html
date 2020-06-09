@@ -8,6 +8,7 @@
     </p>
   {%- endif -%}
   {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
+  <!-- This for loop is intended to separate primary metadata and additiooanl metadata-->
   {%- for field in schema.dataset_fields[:19] -%}
     {%- if field.form_snippet is not none -%}
       {%- snippet 'scheming/snippets/form_field.html',
@@ -15,6 +16,7 @@
         entity_type='dataset', object_type=dataset_type -%}
     {%- endif -%}
   {%- endfor -%}
+  <!-- HACK: A new accordion div is being used to hide non-primary metadatafields fields under Additional Fields accordion. ESN-1341-->
   <div class="accordion-toggle" data-toggle="collapse" href="#collapse-Metadata">
     <h2 class="accordion-heading">Additional Fields</h2>
   </div>
