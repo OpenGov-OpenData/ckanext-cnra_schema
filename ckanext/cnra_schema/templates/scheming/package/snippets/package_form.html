@@ -5,9 +5,10 @@
       <link rel="stylesheet" href="/css/additional_metadata_form.css" />
   {% endblock%}
 
-  <div class=right-text>
-    <p>Questions? See: <a href="pages/metadata">{{ _('Metadata Guides') }}</a></p>
-  </div>
+  <p class=right-text>
+    Questions? See: <a href="/pages/metadata"><u>Metadta Guide</u></a>
+  </p>
+  
   {%- if not dataset_type -%}
     <p>
     dataset_type not passed to template. your version of CKAN
