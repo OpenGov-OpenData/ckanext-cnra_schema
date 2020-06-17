@@ -6,7 +6,7 @@
   {% endblock%}
 
   <p class=right-text>
-    Questions? See: <a href="/pages/metadata"><u>Metadta Guide</u></a>
+    Questions? See: <a href="/pages/metadata"><u>Metadata Guide</u></a>
   </p>
   
   {%- if not dataset_type -%}
@@ -16,7 +16,7 @@
     </p>
   {%- endif -%}
   {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
-  <!-- This for loop is intended to separate primary metadata and additiooanl metadata-->
+  <!-- This for loop is intended to display the primary metadata. More details can be found on ticket ESN-1341-->
   {%- for field in schema.dataset_fields[:19] -%}
     {%- if field.form_snippet is not none -%}
       {%- snippet 'scheming/snippets/form_field.html',
@@ -24,11 +24,12 @@
         entity_type='dataset', object_type=dataset_type -%}
     {%- endif -%}
   {%- endfor -%}
-  <!-- HACK: A new accordion div is being used to hide non-primary metadatafields fields under Additional Fields accordion. ESN-1341-->
-  <div class="accordion-toggle" data-toggle="collapse" href="#collapse-Metadata">
+  <!-- HACK: A new accordion div is being used to hide non-primary metadatafields fields under Additional Fields accordion. More details can be found on ticket ESN-1341-->
+  <div class="accordion-toggle accordion_spacing" data-toggle="collapse" href="#collapse-Metadata">
     <h2 class="accordion-heading">Additional Fields</h2>
   </div>
-  <div id=collapse-Metadata class="collapse accordion-body">
+  <div id=collapse-Metadata class="collapse accordion-body" >
+    <!-- This for loop is intended to display additional metadata. More details can be found on ticket ESN-1341-->
     {%- for field in schema.dataset_fields[19:] -%}
       {%- if field.form_snippet is not none -%}
       {%- snippet 'scheming/snippets/form_field.html',
