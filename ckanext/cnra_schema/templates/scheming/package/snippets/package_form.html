@@ -1,9 +1,54 @@
 {% ckan_extends %}
 
+{% block basic_fields %}
+  {% block styles %}
+      <link rel="stylesheet" href="/css/additional_metadata_form.css" />
+  {% endblock%}
+
+  <p class=right-text>
+    Questions? See: <a href="/pages/metadata"><u>Metadata Guide</u></a>
+  </p>
+  
+  {%- if not dataset_type -%}
+    <p>
+    dataset_type not passed to template. your version of CKAN
+    might not be compatible with ckanext-scheming
+    </p>
+  {%- endif -%}
+  {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
+  {# This for loop is intended to display the primary metadata. More details can be found on ticket ESN-1341 #}
+  {%- for field in schema.dataset_fields[:19] -%}
+    {%- if field.form_snippet is not none -%}
+      {%- snippet 'scheming/snippets/form_field.html',
+        field=field, data=data, errors=errors, licenses=c.licenses,
+        entity_type='dataset', object_type=dataset_type -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {# HACK: A new accordion div is being used to hide non-primary metadatafields fields under Additional Fields accordion. More details can be found on ticket ESN-1341 #}
+  <div class="accordion-toggle accordion_spacing" data-toggle="collapse" href="#collapse-Metadata">
+    <h2 class="accordion-heading">Additional Fields</h2>
+  </div>
+  <div id=collapse-Metadata class="collapse accordion-body" >
+    {# This for loop is intended to display additional metadata. More details can be found on ticket ESN-1341 #}
+    {%- for field in schema.dataset_fields[19:] -%}
+      {%- if field.form_snippet is not none -%}
+      {%- snippet 'scheming/snippets/form_field.html',
+        field=field, data=data, errors=errors, licenses=c.licenses,
+        entity_type='dataset', object_type=dataset_type -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if 'resource_fields' not in schema -%}
+      <!-- force controller to skip resource-editing step for this type -->
+      <input type="hidden" name="_ckan_phase" value="" />
+    {%- endif -%}
+{% endblock %}
+
 {% block metadata_fields %}
   {% block package_metadata_fields_custom %}
     {% block custom_fields %}
       {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
     {% endblock %}
   {% endblock %}
+  </div>  
 {% endblock %}
