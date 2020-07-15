@@ -284,6 +284,9 @@ dataset_fields:
 - field_name: attributeAccuracyReport
   label: Attribute Accuracy Report
 
+#- field_name: accessConstraints
+#  label: Access Constraints
+
 - field_name: useConstraints
   label: Use Constraints
 
@@ -712,9 +715,6 @@ dataset_fields:
     label: Online Linkage
     preset: repeating_text
     form_blanks: 2
-
-#- field_name: accessConstraints
-#  label: Access Constraints
 
 ## CKAN Resource Fields
 resource_fields:

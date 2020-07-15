@@ -5,3 +5,29 @@
 .accordion_spacing {
   padding-bottom: 15px;
 }
+
+p.composite-header {
+  color: rgb(100,100,100);
+  font-weight: bolder;
+  display: inline-block;
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+
+hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 3px solid #eeeeee;
+    border-bottom: 3px solid #ffffff;
+}
+
+.action-info.small {
+  font-size: 11px;
+  line-height: 1.2;
+  padding-bottom: 12px;
+  text-align: right;
+}
+
+.form-horizontal .info-block {
+    display: none;
+}
