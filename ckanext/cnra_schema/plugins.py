@@ -1,4 +1,5 @@
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
+from ckanext.dcat.harvesters.base import HarvesterBase
 from ckanext.spatial.interfaces import ISpatialHarvester
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 import json
@@ -27,6 +28,20 @@ ckanext.cnra_schema:schemas/dataset.yaml
 
     def get_package_dict(self, context, data_dict):
         package_dict = data_dict['package_dict']
+        harvest_object = data_dict['harvest_object']
+
+        harvest_source_type = harvest_object.source.type
+
+        if harvest_source_type == 'fgdc':
+            self.get_fgdc_package_dict(package_dict)
+
+        elif harvest_source_type == 'waf':
+            self.get_waf_package_dict(package_dict, harvest_object)
+        
+
+        return package_dict
+
+    def get_fgdc_package_dict(self, package_dict):
         fgdc_values = data_dict['fgdc_values']
 
         contact = 'None'
@@ -304,8 +319,113 @@ ckanext.cnra_schema:schemas/dataset.yaml
                     resources.append(resource)
             package_dict['resources'] = resources
 
-        return package_dict
+    def get_waf_package_dict(self, data_dict, harvest_object):
+        config = harvest_object.job.source.config
 
+        # Set default tags if needed
+        default_tags = config.get('default_tags', [])
+        if default_tags:
+            if not 'tags' in package_dict:
+                package_dict['tags'] = []
+            package_dict['tags'].extend(
+                [t for t in default_tags if t not in package_dict['tags']])
+
+        # clean tags of invalid characters
+        tags = package_dict.get('tags', [])
+        package_dict['tags'] = HarvesterBase._clean_tags(tags)
+
+        # Set default groups if needed
+        default_groups = config.get('default_groups', [])
+        if default_groups:
+            if not 'groups' in package_dict:
+                package_dict['groups'] = []
+            existing_group_ids = [g['id'] for g in package_dict['groups']]
+            package_dict['groups'].extend(
+                [{'name':g['name']} for g in self.config['default_group_dicts']
+                 if g['id'] not in existing_group_ids])
+
+        # Set default extras if needed
+        default_extras = config.get('default_extras', {})
+        def get_extra(key, package_dict):
+            for extra in package_dict.get('extras', []):
+                if extra['key'] == key:
+                    return extra
+
+        if not 'extras' in package_dict:
+            package_dict['extras'] = []
+
+        if default_extras:
+            override_extras = config.get('override_extras', False)
+            for key, value in default_extras.iteritems():
+                existing_extra = get_extra(key, package_dict)
+                if existing_extra and not override_extras:
+                    continue  # no need for the default
+                if existing_extra:
+                    package_dict['extras'].remove(existing_extra)
+
+                package_dict['extras'].append({'key': key, 'value': value})
+
+        # set default values from config
+        default_values = config.get('default_values', [])
+        if default_values:
+            for default_field in default_values:
+                for key in default_field:
+                    package_dict[key] = default_field[key]
+                    # Remove from extras any keys present in the config
+                    existing_extra = get_extra(key, package_dict)
+                    if existing_extra:
+                        package_dict['extras'].remove(existing_extra)
+
+        # set the mapping fields its corresponding default_values
+        map_fields = config.get('map_fields', [])
+        if map_fields:
+            for map_field in map_fields:
+                source_field = map_field.get('source')
+                target_field = map_field.get('target')
+                default_value = map_field.get('default')
+                value = config.get(source_field, default_value)
+                # If value is a list, convert to string
+                if isinstance(value, list):
+                    value = ', '.join(str(x) for x in value)
+                package_dict[target_field] = value
+                # Remove from extras any keys present in the config
+                existing_extra = get_extra(target_field, package_dict)
+                if existing_extra:
+                    package_dict['extras'].remove(existing_extra)
+
+        # set the publisher
+        publisher_mapping = config.get('publisher', {})
+        publisher_field = publisher_mapping.get('publisher_field')
+        if publisher_field:
+            publisher = config.get('publisher', {})
+            publisher_name = publisher.get('name') or \
+                             publisher_mapping.get('default_publisher')
+            package_dict[publisher_field] = publisher_name
+            # Remove from extras any keys present in the config
+            existing_extra = get_extra(publisher_field, package_dict)
+            if existing_extra:
+                package_dict['extras'].remove(existing_extra)
+
+        # set the contact point
+        contact_point_mapping = config.get('contact_point', {})
+        name_field = contact_point_mapping.get('name_field')
+        email_field = contact_point_mapping.get('email_field')
+
+        if name_field:
+            contactPointName = contact_point_mapping.get('default_name')
+            package_dict[name_field] = contactPointName
+            # Remove from extras the name field
+            existing_extra = get_extra(name_field, package_dict)
+            if existing_extra:
+                package_dict['extras'].remove(existing_extra)
+
+        if email_field:
+            contactPointEmail = contact_point_mapping.get('default_email')
+            package_dict[email_field] = contactPointEmail
+            # Remove from extras the email field
+            existing_extra = get_extra(email_field, package_dict)
+            if existing_extra:
+                package_dict['extras'].remove(existing_extra)
 
     def get_contact_values(self, fgdc_values, fgdc_field):
         contact_info = {
