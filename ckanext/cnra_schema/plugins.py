@@ -435,8 +435,4 @@ ckanext.cnra_schema:schemas/dataset.yaml
             if existing_extra:
                 package_dict['extras'].remove(existing_extra)
 
-        log.debug(iso_values)
-
-        log.debug(package_dict)
-
         return package_dict
