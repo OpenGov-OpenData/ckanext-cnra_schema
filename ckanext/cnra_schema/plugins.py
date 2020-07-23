@@ -316,8 +316,55 @@ ckanext.cnra_schema:schemas/dataset.yaml
                     })
                     resources.append(resource)
             package_dict['resources'] = resources
+
         return package_dict
 
+
+    def get_contact_values(self, fgdc_values, fgdc_field):
+        contact_info = {
+            'contactPerson': '',
+            'contactOrganization': '',
+            'contactPosition': '',
+            'telephone': [''],
+            'email': [''],
+            #'fax': [''],
+            #'hoursOfService': '',
+            #'contactInstructions': '',
+        }
+        contact_address = []
+
+        if fgdc_values.get(fgdc_field):
+            contact = fgdc_values.get(fgdc_field)
+            contact_info = {
+                'contactPerson': contact.get('individual-name'),
+                'contactOrganization': contact.get('organisation-name'),
+                'contactPosition': contact.get('position-name'),
+                'telephone': contact.get('telephone'),
+                'email': contact.get('email'),
+                #'fax': contact.get('fax'),
+                #'hoursOfService': contact.get('hours-of-service'),
+                #'contactInstructions': contact.get('contact-instructions'),
+            }
+
+            contact_address_list = contact.get('contact-address',[])
+            for address in contact_address_list:
+                contact_address.append({
+                    'addressType': address.get('addrtype'),
+                    'address': ', '.join(address.get('address')),
+                    'city': address.get('city'),
+                    'state': address.get('state'),
+                    'postalCode': address.get('postal'),
+                    'country': address.get('country')
+                })
+
+        contact_info = json.dumps(contact_info)
+        contact_address = json.dumps(contact_address)
+        contact_values = {
+            'contact_info': contact_info,
+            'contact_address': contact_address
+        }
+
+        return(contact_values)
 
 
     def get_waf_package_dict(self, data_dict):
