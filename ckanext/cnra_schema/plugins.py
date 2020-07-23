@@ -1,5 +1,4 @@
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
-from ckanext.dcat.harvesters.base import HarvesterBase
 from ckanext.spatial.interfaces import ISpatialHarvester
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 import json
@@ -27,21 +26,20 @@ ckanext.cnra_schema:schemas/dataset.yaml
 """
 
     def get_package_dict(self, context, data_dict):
-        package_dict = data_dict['package_dict']
         harvest_object = data_dict['harvest_object']
-
         harvest_source_type = harvest_object.source.type
 
         if harvest_source_type == 'fgdc':
-            self.get_fgdc_package_dict(package_dict)
+            modified_package_dict = self.get_fgdc_package_dict(data_dict)
 
         elif harvest_source_type == 'waf':
-            self.get_waf_package_dict(package_dict, harvest_object)
+            modified_package_dict = self.get_waf_package_dict(data_dict)
         
+        return modified_package_dict
 
-        return package_dict
 
-    def get_fgdc_package_dict(self, package_dict):
+    def get_fgdc_package_dict(self, data_dict):
+        package_dict = data_dict['package_dict']
         fgdc_values = data_dict['fgdc_values']
 
         contact = 'None'
@@ -318,34 +316,18 @@ ckanext.cnra_schema:schemas/dataset.yaml
                     })
                     resources.append(resource)
             package_dict['resources'] = resources
+        return package_dict
 
-    def get_waf_package_dict(self, data_dict, harvest_object):
-        config = harvest_object.job.source.config
 
-        # Set default tags if needed
-        default_tags = config.get('default_tags', [])
-        if default_tags:
-            if not 'tags' in package_dict:
-                package_dict['tags'] = []
-            package_dict['tags'].extend(
-                [t for t in default_tags if t not in package_dict['tags']])
 
-        # clean tags of invalid characters
-        tags = package_dict.get('tags', [])
-        package_dict['tags'] = HarvesterBase._clean_tags(tags)
+    def get_waf_package_dict(self, data_dict):
+        harvest_object = data_dict['harvest_object']
+        config_str = harvest_object.job.source.config
+        harvest_job_config = json.loads(config_str)
 
-        # Set default groups if needed
-        default_groups = config.get('default_groups', [])
-        if default_groups:
-            if not 'groups' in package_dict:
-                package_dict['groups'] = []
-            existing_group_ids = [g['id'] for g in package_dict['groups']]
-            package_dict['groups'].extend(
-                [{'name':g['name']} for g in self.config['default_group_dicts']
-                 if g['id'] not in existing_group_ids])
+        package_dict = data_dict['package_dict']
+        iso_values = data_dict['iso_values']
 
-        # Set default extras if needed
-        default_extras = config.get('default_extras', {})
         def get_extra(key, package_dict):
             for extra in package_dict.get('extras', []):
                 if extra['key'] == key:
@@ -354,36 +336,14 @@ ckanext.cnra_schema:schemas/dataset.yaml
         if not 'extras' in package_dict:
             package_dict['extras'] = []
 
-        if default_extras:
-            override_extras = config.get('override_extras', False)
-            for key, value in default_extras.iteritems():
-                existing_extra = get_extra(key, package_dict)
-                if existing_extra and not override_extras:
-                    continue  # no need for the default
-                if existing_extra:
-                    package_dict['extras'].remove(existing_extra)
-
-                package_dict['extras'].append({'key': key, 'value': value})
-
-        # set default values from config
-        default_values = config.get('default_values', [])
-        if default_values:
-            for default_field in default_values:
-                for key in default_field:
-                    package_dict[key] = default_field[key]
-                    # Remove from extras any keys present in the config
-                    existing_extra = get_extra(key, package_dict)
-                    if existing_extra:
-                        package_dict['extras'].remove(existing_extra)
-
         # set the mapping fields its corresponding default_values
-        map_fields = config.get('map_fields', [])
+        map_fields = harvest_job_config.get('map_fields', [])
         if map_fields:
             for map_field in map_fields:
                 source_field = map_field.get('source')
                 target_field = map_field.get('target')
                 default_value = map_field.get('default')
-                value = config.get(source_field, default_value)
+                value = iso_values.get(source_field, default_value)
                 # If value is a list, convert to string
                 if isinstance(value, list):
                     value = ', '.join(str(x) for x in value)
@@ -394,11 +354,10 @@ ckanext.cnra_schema:schemas/dataset.yaml
                     package_dict['extras'].remove(existing_extra)
 
         # set the publisher
-        publisher_mapping = config.get('publisher', {})
+        publisher_mapping = harvest_job_config.get('publisher', {})
         publisher_field = publisher_mapping.get('publisher_field')
         if publisher_field:
-            publisher = config.get('publisher', {})
-            publisher_name = publisher.get('name') or \
+            publisher_name = iso_values.get('publisher') or \
                              publisher_mapping.get('default_publisher')
             package_dict[publisher_field] = publisher_name
             # Remove from extras any keys present in the config
@@ -407,12 +366,13 @@ ckanext.cnra_schema:schemas/dataset.yaml
                 package_dict['extras'].remove(existing_extra)
 
         # set the contact point
-        contact_point_mapping = config.get('contact_point', {})
+        contact_point_mapping = harvest_job_config.get('contact_point', {})
         name_field = contact_point_mapping.get('name_field')
         email_field = contact_point_mapping.get('email_field')
 
         if name_field:
-            contactPointName = contact_point_mapping.get('default_name')
+            contactPointName = iso_values.get('contact') or \
+                               contact_point_mapping.get('default_name')
             package_dict[name_field] = contactPointName
             # Remove from extras the name field
             existing_extra = get_extra(name_field, package_dict)
@@ -420,55 +380,16 @@ ckanext.cnra_schema:schemas/dataset.yaml
                 package_dict['extras'].remove(existing_extra)
 
         if email_field:
-            contactPointEmail = contact_point_mapping.get('default_email')
+            contactPointEmail = iso_values.get('contact-email') or \
+                                contact_point_mapping.get('default_email')
             package_dict[email_field] = contactPointEmail
             # Remove from extras the email field
             existing_extra = get_extra(email_field, package_dict)
             if existing_extra:
                 package_dict['extras'].remove(existing_extra)
 
-    def get_contact_values(self, fgdc_values, fgdc_field):
-        contact_info = {
-            'contactPerson': '',
-            'contactOrganization': '',
-            'contactPosition': '',
-            'telephone': [''],
-            'email': [''],
-            #'fax': [''],
-            #'hoursOfService': '',
-            #'contactInstructions': '',
-        }
-        contact_address = []
+        log.debug(iso_values)
 
-        if fgdc_values.get(fgdc_field):
-            contact = fgdc_values.get(fgdc_field)
-            contact_info = {
-                'contactPerson': contact.get('individual-name'),
-                'contactOrganization': contact.get('organisation-name'),
-                'contactPosition': contact.get('position-name'),
-                'telephone': contact.get('telephone'),
-                'email': contact.get('email'),
-                #'fax': contact.get('fax'),
-                #'hoursOfService': contact.get('hours-of-service'),
-                #'contactInstructions': contact.get('contact-instructions'),
-            }
+        log.debug(package_dict)
 
-            contact_address_list = contact.get('contact-address',[])
-            for address in contact_address_list:
-                contact_address.append({
-                    'addressType': address.get('addrtype'),
-                    'address': ', '.join(address.get('address')),
-                    'city': address.get('city'),
-                    'state': address.get('state'),
-                    'postalCode': address.get('postal'),
-                    'country': address.get('country')
-                })
-
-        contact_info = json.dumps(contact_info)
-        contact_address = json.dumps(contact_address)
-        contact_values = {
-            'contact_info': contact_info,
-            'contact_address': contact_address
-        }
-
-        return(contact_values)
+        return package_dict
