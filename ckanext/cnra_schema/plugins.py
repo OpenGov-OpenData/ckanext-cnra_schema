@@ -1,10 +1,13 @@
+import json
+import logging
+
+import ckanext.cnra_schema.helpers as cnra_schema_helpers
+
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
-import json
 from markupsafe import Markup
 
-import logging
 log = logging.getLogger(__name__)
 
 class cnraSchema(SingletonPlugin):
@@ -375,64 +378,19 @@ ckanext.cnra_schema:schemas/dataset.yaml
         package_dict = data_dict['package_dict']
         iso_values = data_dict['iso_values']
 
-        def get_extra(key, package_dict):
-            for extra in package_dict.get('extras', []):
-                if extra['key'] == key:
-                    return extra
-
-        if not 'extras' in package_dict:
+        if 'extras' not in package_dict:
             package_dict['extras'] = []
 
         # set the mapping fields its corresponding default_values
         map_fields = harvest_job_config.get('map_fields', [])
-        if map_fields:
-            for map_field in map_fields:
-                source_field = map_field.get('source')
-                target_field = map_field.get('target')
-                default_value = map_field.get('default')
-                value = iso_values.get(source_field, default_value)
-                # If value is a list, convert to string
-                if isinstance(value, list):
-                    value = ', '.join(str(x) for x in value)
-                package_dict[target_field] = value
-                # Remove from extras any keys present in the config
-                existing_extra = get_extra(target_field, package_dict)
-                if existing_extra:
-                    package_dict['extras'].remove(existing_extra)
+        package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
 
         # set the publisher
         publisher_mapping = harvest_job_config.get('publisher', {})
-        publisher_field = publisher_mapping.get('publisher_field')
-        if publisher_field:
-            publisher_name = iso_values.get('publisher') or \
-                             publisher_mapping.get('default_publisher')
-            package_dict[publisher_field] = publisher_name
-            # Remove from extras any keys present in the config
-            existing_extra = get_extra(publisher_field, package_dict)
-            if existing_extra:
-                package_dict['extras'].remove(existing_extra)
+        package_dict = cnra_schema_helpers.set_publisher_values(package_dict, iso_values, publisher_mapping)
 
         # set the contact point
         contact_point_mapping = harvest_job_config.get('contact_point', {})
-        name_field = contact_point_mapping.get('name_field')
-        email_field = contact_point_mapping.get('email_field')
-
-        if name_field:
-            contactPointName = iso_values.get('contact') or \
-                               contact_point_mapping.get('default_name')
-            package_dict[name_field] = contactPointName
-            # Remove from extras the name field
-            existing_extra = get_extra(name_field, package_dict)
-            if existing_extra:
-                package_dict['extras'].remove(existing_extra)
-
-        if email_field:
-            contactPointEmail = iso_values.get('contact-email') or \
-                                contact_point_mapping.get('default_email')
-            package_dict[email_field] = contactPointEmail
-            # Remove from extras the email field
-            existing_extra = get_extra(email_field, package_dict)
-            if existing_extra:
-                package_dict['extras'].remove(existing_extra)
+        package_dict = cnra_schema_helpers.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
 
         return package_dict
