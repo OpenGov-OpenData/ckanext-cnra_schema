@@ -387,7 +387,7 @@ ckanext.cnra_schema:schemas/dataset.yaml
 
         # set the publisher
         publisher_mapping = harvest_job_config.get('publisher', {})
-        package_dict = cnra_schema_helpers.set_publisher_values(package_dict, iso_values, publisher_mapping)
+        package_dict = cnra_schema_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
 
         # set the contact point
         contact_point_mapping = harvest_job_config.get('contact_point', {})

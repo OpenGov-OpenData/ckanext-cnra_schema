@@ -31,7 +31,7 @@ def set_waf_map_fields(package_dict, iso_values, map_fields):
     return package_dict
 
 
-def set_publisher_values(package_dict, iso_values, publisher_mapping):
+def set_waf_publisher_values(package_dict, iso_values, publisher_mapping):
     publisher_field = publisher_mapping.get('publisher_field')
 
     if publisher_field:
