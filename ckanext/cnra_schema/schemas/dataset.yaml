@@ -102,6 +102,37 @@ dataset_fields:
     value: Other
   display_snippet: select.html
 
+## "license_id"
+- field_name: license_id
+  label: License
+  form_snippet: license.html
+  help_text: License definitions and additional information can be found at http://opendefinition.org/
+
+## "public_access_level"
+- field_name: public_access_level
+  label: Public Access Level
+  preset: select
+  required: True
+  choices:
+  - label: Public
+    value: Public
+  - label: Restricted
+    value: Restricted
+  - label: Non-Public
+    value: Non-Public
+
+## "limitations"
+- field_name: limitations
+  label: Limitations
+  form_snippet: markdown.html
+  form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
+
+## "language"
+- field_name: language
+  label: Language
+  form_snippet: text.html
+  form_placeholder: English
+
 ## "temporal_coverage"
 - field_name: temporal_coverage
   label: Temporal Coverage
@@ -180,36 +211,24 @@ dataset_fields:
   display_snippet: spatial_details.html
   validators: scheming_required scheming_valid_json_object
 
-## "license_id"
-- field_name: license_id
-  label: License
-  form_snippet: license.html
-  help_text: License definitions and additional information can be found at http://opendefinition.org/
+- field_name: placeKeywords
+  label: Place Keywords
+  preset: tag_string_autocomplete
+  display_snippet: place_keywords.html
 
-## "public_access_level"
-- field_name: public_access_level
-  label: Public Access Level
-  preset: select
-  required: True
-  choices:
-  - label: Public
-    value: Public
-  - label: Restricted
-    value: Restricted
-  - label: Non-Public
-    value: Non-Public
-
-## "limitations"
-- field_name: limitations
-  label: Limitations
-  form_snippet: markdown.html
-  form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
-
-## "language"
-- field_name: language
-  label: Language
-  form_snippet: text.html
-  form_placeholder: English
+## "bounding_coordinate"
+- field_name: boundingCoordinate
+  label: Bounding Coordinate
+  preset: composite
+  subfields:
+  - field_name: northBoundingCoordinate
+    label: North Bounding Coordinate
+  - field_name: eastBoundingCoordinate
+    label: East Bounding Coordinate
+  - field_name: southBoundingCoordinate
+    label: South Bounding Coordinate
+  - field_name: westBoundingCoordinate
+    label: West Bounding Coordinate
 
 - field_name: purpose
   label: Purpose
@@ -472,25 +491,6 @@ dataset_fields:
 
 - field_name: nativeDatasetEnvironment
   label: Native Dataset Environment
-
-- field_name: placeKeywords
-  label: Place Keywords
-  preset: tag_string_autocomplete
-  display_snippet: place_keywords.html
-
-## "bounding_coordinate"
-- field_name: boundingCoordinate
-  label: Bounding Coordinate
-  preset: composite
-  subfields:
-  - field_name: northBoundingCoordinate
-    label: North Bounding Coordinate
-  - field_name: eastBoundingCoordinate
-    label: East Bounding Coordinate
-  - field_name: southBoundingCoordinate
-    label: South Bounding Coordinate
-  - field_name: westBoundingCoordinate
-    label: West Bounding Coordinate
 
 - field_name: geographicExtentDescription
   label: Description of Geographic Extent

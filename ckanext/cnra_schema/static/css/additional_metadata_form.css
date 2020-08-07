@@ -2,9 +2,35 @@
   text-align: right;
 }
 
-.accordion_spacing {
+.accordion_spacing-extra-metadata {
   padding-bottom: 15px;
 }
+
+.accordion-heading-extra-metadata {
+  background-color: #E8ECEC;
+  border-bottom: 0;
+  color: #2d2d2d;
+  font-size: 16px;
+  position: relative;
+  margin: 0;
+  padding: 9px 21px 9px 12px;
+  cursor: pointer;
+  }
+
+.accordion-heading-extra-metadata a {
+  color: #2d2d2d;
+  }
+
+.accordion-toggle-extra-metadata h2.accordion-heading-extra-metadata:before {
+  color: #2d2d2d;
+  content: "\f077";
+  font-family: "fontawesome";
+  font-weight: bold;
+  padding-right: 10px;
+  }
+
+.accordion-toggle-extra-metadata.collapsed h2.accordion-heading-extra-metadata:before {
+  content: "\f078"; }
 
 p.composite-header {
   color: rgb(100,100,100);
