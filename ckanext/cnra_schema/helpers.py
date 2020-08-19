@@ -3,10 +3,15 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get_extra(key, package_dict):
-    for extra in package_dict.get('extras', []):
+def delete_existing_extra_from_package_dict(key, package_dict):
+    existing_extra = {}
+    extras_list = package_dict.get('extras', [])
+    for extra in extras_list:
         if extra['key'] == key:
-            return extra
+            existing_extra = extra
+
+    if existing_extra:
+        package_dict['extras'].remove(existing_extra)
 
 
 def set_waf_map_fields(package_dict, iso_values, map_fields):
@@ -24,9 +29,7 @@ def set_waf_map_fields(package_dict, iso_values, map_fields):
             package_dict[target_field] = value
 
             # Remove from extras any keys present in the config
-            existing_extra = get_extra(target_field, package_dict)
-            if existing_extra:
-                package_dict['extras'].remove(existing_extra)
+            delete_existing_extra_from_package_dict(target_field, package_dict)
 
     return package_dict
 
@@ -40,9 +43,7 @@ def set_waf_publisher_values(package_dict, iso_values, publisher_mapping):
         package_dict[publisher_field] = publisher_name
 
         # Remove from extras any keys present in the config
-        existing_extra = get_extra(publisher_field, package_dict)
-        if existing_extra:
-            package_dict['extras'].remove(existing_extra)
+        delete_existing_extra_from_package_dict(publisher_field, package_dict)
 
     return package_dict
 
@@ -57,9 +58,7 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
         package_dict[name_field] = contact_point_name
 
         # Remove from extras the name field
-        existing_extra = get_extra(name_field, package_dict)
-        if existing_extra:
-            package_dict['extras'].remove(existing_extra)
+        delete_existing_extra_from_package_dict(name_field, package_dict)
 
     if email_field:
         contact_point_email = iso_values.get('contact-email') or \
@@ -67,8 +66,6 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
         package_dict[email_field] = contact_point_email
 
         # Remove from extras the email field
-        existing_extra = get_extra(email_field, package_dict)
-        if existing_extra:
-            package_dict['extras'].remove(existing_extra)
+        delete_existing_extra_from_package_dict(email_field, package_dict)
 
     return package_dict

@@ -1,6 +1,7 @@
 {
    "publisher":{
-      "publisher_field":"publisher"
+      "publisher_field":"publisher",
+      "default_publisher":"Default-Publisher"
    },
    "default_tags":[
       "data.gov",
@@ -13,12 +14,12 @@
          "target":"language"
       },
       {
-         "default":"",
+         "default":"Canada",
          "source":"spatial",
          "target":"spatial_coverage"
       },
       {
-         "default":"",
+         "default":"Complete",
          "source":"progress",
          "target":"progress"
       }
@@ -27,9 +28,9 @@
       "test-group"
    ],
    "contact_point":{
-      "default_email":"None",
+      "default_email":"test@default.com",
       "name_field":"contact_name",
-      "default_name":"None",
+      "default_name":"Default Name",
       "email_field":"contact_email"
    },
    "default_values":[

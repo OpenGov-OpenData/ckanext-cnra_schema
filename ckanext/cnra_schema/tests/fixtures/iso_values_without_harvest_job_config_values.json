@@ -110,7 +110,6 @@
    ],
    "conformity-specification":"",
    "metadata-language":"eng",
-   "language":"Spanish",
    "distributor":[
 
    ],
@@ -139,7 +138,6 @@
    "equivalent-scale":[
 
    ],
-   "contact":"John Smith",
    "extent-free-text":[
 
    ],
@@ -164,7 +162,6 @@
    "data-format":[
 
    ],
-   "contact-email":"test@test.com",
    "extent-controlled":[
 
    ],
@@ -176,9 +173,6 @@
    "unique-resource-identifier":"complete_latest",
    "frequency-of-update":"",
    "limitations-on-public-access":[
-
-   ],
-   "progress":[
 
    ],
    "coupled-resource":[
@@ -211,9 +205,7 @@
    "metadata-standard-name":"ISO 19115-2 Geographic Information - Metadata Part 2 Extensions for\n          imagery and gridded data",
    "url":"",
    "title":"NYHOPS Forecast Model Results ",
-   "publisher":"Test-User",
    "additional-information-source":"",
-   "spatial":"USA",
    "spatial-resolution":"",
    "date-created":"",
    "topic-category":[

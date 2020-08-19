@@ -1,71 +1,4 @@
 {
-   "spatial_coverage":"",
-   "owner_org":"41e03d9c-1f25-4c6f-8a81-1f0a4edf178b",
-   "name":"nyhops-forecast-model-results",
-   "language":"English",
-   "tags":[
-      {
-         "name":"depth"
-      },
-      {
-         "name":"angle_of_rotation_from_east_to_x"
-      },
-      {
-         "name":"sea_surface_height_above_sea_level"
-      },
-      {
-         "name":"eastward_wind"
-      },
-      {
-         "name":"northward_wind"
-      },
-      {
-         "name":"air_pressure_at_sea_level"
-      },
-      {
-         "name":"sea_surface_wind_wave_significant_height"
-      },
-      {
-         "name":"sea_surface_wind_wave_period"
-      },
-      {
-         "name":"sea_surface_wave_from_direction"
-      },
-      {
-         "name":"sea_water_x_velocity"
-      },
-      {
-         "name":"sea_water_y_velocity"
-      },
-      {
-         "name":"sea_water_salinity"
-      },
-      {
-         "name":"sea_water_temperature"
-      },
-      {
-         "name":"time"
-      },
-      {
-         "name":"ocean_sigma_coordinate"
-      },
-      {
-         "name":"longitude"
-      },
-      {
-         "name":"latitude"
-      },
-      {
-         "name":"data.gov"
-      },
-      {
-         "name":"doi-gov"
-      }
-   ],
-   "public_access_level":"Public",
-   "notes":"",
-   "title":"NYHOPS Forecast Model Results ",
-   "publisher":"None",
    "extras":[
       {
          "value":"37.69893264770508",
@@ -174,6 +107,10 @@
          "key":"spatial"
       },
       {
+         "value":"",
+         "key":"progress"
+      },
+      {
          "value":"complete_latest",
          "key":"guid"
       },
@@ -190,22 +127,6 @@
       {
          "value":"True",
          "key":"spatial_harvester"
-      }
-   ],
-   "contact_email":"None",
-   "groups":[
-
-   ],
-   "progress":"",
-   "contact_name":"None",
-   "resources":[
-      {
-         "resource_locator_function":"download",
-         "name":"OPeNDAP",
-         "format":"application/x-netcdf",
-         "url":"http://colossus.dl.stevens-tech.edu:8080/thredds/dodsC/latest/Complete_gcmplt.nc",
-         "resource_locator_protocol":"",
-         "description":"THREDDS OPeNDAP"
       }
    ]
 }
