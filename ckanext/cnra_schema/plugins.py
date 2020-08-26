@@ -12,7 +12,7 @@ class cnraSchema(SingletonPlugin):
     implements(ISpatialHarvester, inherit=True)
 
     def update_config(self, config):
-        toolkit.add_public_directory(config, "static")
+        toolkit.add_resource('fanstatic', 'cnra_schema')
         toolkit.add_template_directory(config, "templates")
 
         config['scheming.presets'] = """
