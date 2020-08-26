@@ -30,11 +30,6 @@ dataset_fields:
   form_placeholder: eg. Some useful notes about the data
   required: True
 
-- field_name: purpose
-  label: Purpose
-  form_snippet: markdown.html
-  form_placeholder: A summary of the intentions with which the data set was developed
-
 ## "keywords"
 #  Use core CKAN free-form tag field
 - field_name: tag_string
@@ -106,6 +101,37 @@ dataset_fields:
   - label: Other
     value: Other
   display_snippet: select.html
+
+## "license_id"
+- field_name: license_id
+  label: License
+  form_snippet: license.html
+  help_text: License definitions and additional information can be found at http://opendefinition.org/
+
+## "public_access_level"
+- field_name: public_access_level
+  label: Public Access Level
+  preset: select
+  required: True
+  choices:
+  - label: Public
+    value: Public
+  - label: Restricted
+    value: Restricted
+  - label: Non-Public
+    value: Non-Public
+
+## "limitations"
+- field_name: limitations
+  label: Limitations
+  form_snippet: markdown.html
+  form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
+
+## "language"
+- field_name: language
+  label: Language
+  form_snippet: text.html
+  form_placeholder: English
 
 ## "temporal_coverage"
 - field_name: temporal_coverage
@@ -185,36 +211,29 @@ dataset_fields:
   display_snippet: spatial_details.html
   validators: scheming_required scheming_valid_json_object
 
-## "public_access_level"
-- field_name: public_access_level
-  label: Public Access Level
-  preset: select
-  required: True
-  choices:
-  - label: Public
-    value: Public
-  - label: Restricted
-    value: Restricted
-  - label: Non-Public
-    value: Non-Public
+- field_name: placeKeywords
+  label: Place Keywords
+  preset: tag_string_autocomplete
+  display_snippet: place_keywords.html
 
-## "license_id"
-- field_name: license_id
-  label: License
-  form_snippet: license.html
-  help_text: License definitions and additional information can be found at http://opendefinition.org/
+## "bounding_coordinate"
+- field_name: boundingCoordinate
+  label: Bounding Coordinate
+  preset: composite
+  subfields:
+  - field_name: northBoundingCoordinate
+    label: North Bounding Coordinate
+  - field_name: eastBoundingCoordinate
+    label: East Bounding Coordinate
+  - field_name: southBoundingCoordinate
+    label: South Bounding Coordinate
+  - field_name: westBoundingCoordinate
+    label: West Bounding Coordinate
 
-## "limitations"
-- field_name: limitations
-  label: Limitations
+- field_name: purpose
+  label: Purpose
   form_snippet: markdown.html
-  form_placeholder: Appropriate usage notes, disclaimers and conditions of use.
-
-## "language"
-- field_name: language
-  label: Language
-  form_snippet: text.html
-  form_placeholder: English
+  form_placeholder: A summary of the intentions with which the data set was developed
 
 ## "identification_information_citation"
 - field_name: idInfoCitation
@@ -242,15 +261,53 @@ dataset_fields:
 - field_name: credit
   label: Credit
 
+- field_name: progress
+  label: Progress
+
 - field_name: maintenanceAndUpdateFrequency
   label: Maintenance and Update Frequency
   help_text: "The frequency with which changes and additions are made to the data set after the initial data set is completed: Continually, Daily, Weekly, Monthly, Annually, Unknown, As needed, Irregular, None planned, or free text"
 
-- field_name: progress
-  label: Progress
+## "Data Quality Information Lineage Citation"
+- field_name: lineageCitation
+  label: Lineage Citation
+  preset: composite
+  subfields:
+  - field_name: title
+    label: Title
+  - field_name: originator
+    label: Originator
+    preset: repeating_text
+    form_blanks: 3
+  - field_name: publicationDate
+    label: Publication Date
+  - field_name: geospatialDataPresentationForm
+    label: Geospatial Data Presentation Form
+    help_text: "The mode in which the geospatial data are represented: atlas, audio, diagram, document, globe, map, model, multimedia presentation, profile, raster digital data, remote-sensing image, section, spreadsheet, tabular digital data, vector digital data, video, view, or free text"
 
-- field_name: nativeDatasetEnvironment
-  label: Native Dataset Environment
+- field_name: sourceScaleDenominator
+  label: Source Scale Denominator
+
+- field_name: typeOfSourceMedia
+  label: Type of Source Media
+
+- field_name: sourceCurrentnessReference
+  label: Source Currentness Reference
+
+- field_name: sourceCitationAbbreviation
+  label: Source Citation Abbreviation
+
+- field_name: completenessReport
+  label: Completeness Report
+
+- field_name: attributeAccuracyReport
+  label: Attribute Accuracy Report
+
+#- field_name: accessConstraints
+#  label: Access Constraints
+
+- field_name: useConstraints
+  label: Use Constraints
 
 ## "Point_of_Contact"
 - field_name: pointOfContact
@@ -346,6 +403,56 @@ dataset_fields:
   - field_name: country
     label: Country
 
+## "Distributor_Contact"
+- field_name: distributorContact
+  label: Distributor Contact
+  preset: composite
+  subfields:
+  - field_name: contactPerson
+    label: Contact Person
+  - field_name: contactOrganization
+    label: Contact Organization
+  - field_name: contactPosition
+    label: Contact Position
+  - field_name: telephone
+    label: Voice Telephone
+    preset: repeating_text
+    form_blanks: 2
+  - field_name: email
+    label: Email
+    preset: repeating_text
+    form_blanks: 2
+#  - field_name: fax
+#    label: Fax
+#    preset: repeating_text
+#    form_blanks: 2
+#  - field_name: hoursOfService
+#    label: Hours of Service
+#  - field_name: contactInstructions
+#    label: Contact Instructions
+
+## "Distributor_Contact_Address"
+- field_name: distributorContactAddress
+  label: Distributor Contact Address
+  preset: composite_repeating
+  form_blanks: 1
+  subfields:
+  - field_name: addressType
+    label: Address Type
+  - field_name: address
+    label: Address
+  - field_name: city
+    label: City
+  - field_name: state
+    label: State
+  - field_name: postalCode
+    label: Postal Code
+  - field_name: country
+    label: Country
+
+- field_name: distributionLiability
+  label: Distribution Liability
+
 ## "Time_Period_of_Content"
 - field_name: timePeriodOfContent
   label: Time Period of Content
@@ -382,27 +489,11 @@ dataset_fields:
 - field_name: currentnessReference
   label: Currentness Reference
 
+- field_name: nativeDatasetEnvironment
+  label: Native Dataset Environment
+
 - field_name: geographicExtentDescription
   label: Description of Geographic Extent
-
-- field_name: placeKeywords
-  label: Place Keywords
-  preset: tag_string_autocomplete
-  display_snippet: place_keywords.html
-
-## "bounding_coordinate"
-- field_name: boundingCoordinate
-  label: Bounding Coordinate
-  preset: composite
-  subfields:
-  - field_name: northBoundingCoordinate
-    label: North Bounding Coordinate
-  - field_name: eastBoundingCoordinate
-    label: East Bounding Coordinate
-  - field_name: southBoundingCoordinate
-    label: South Bounding Coordinate
-  - field_name: westBoundingCoordinate
-    label: West Bounding Coordinate
 
 - field_name: mapProjectionName
   label: Map Projection Name
@@ -438,41 +529,6 @@ dataset_fields:
     label: Ordinate Resolution
   - field_name: planarDistanceUnits
     label: Planar Distance Units
-
-## "Data Quality Information Lineage Citation"
-- field_name: lineageCitation
-  label: Lineage Citation
-  preset: composite
-  subfields:
-  - field_name: title
-    label: Title
-  - field_name: originator
-    label: Originator
-    preset: repeating_text
-    form_blanks: 3
-  - field_name: publicationDate
-    label: Publication Date
-  - field_name: geospatialDataPresentationForm
-    label: Geospatial Data Presentation Form
-    help_text: "The mode in which the geospatial data are represented: atlas, audio, diagram, document, globe, map, model, multimedia presentation, profile, raster digital data, remote-sensing image, section, spreadsheet, tabular digital data, vector digital data, video, view, or free text"
-
-- field_name: sourceScaleDenominator
-  label: Source Scale Denominator
-
-- field_name: typeOfSourceMedia
-  label: Type of Source Media
-
-- field_name: sourceCurrentnessReference
-  label: Source Currentness Reference
-
-- field_name: sourceCitationAbbreviation
-  label: Source Citation Abbreviation
-
-- field_name: completenessReport
-  label: Completeness Report
-
-- field_name: attributeAccuracyReport
-  label: Attribute Accuracy Report
 
 - field_name: taxonKeywords
   label: Taxonomic Keywords
@@ -659,62 +715,6 @@ dataset_fields:
     label: Online Linkage
     preset: repeating_text
     form_blanks: 2
-
-#- field_name: accessConstraints
-#  label: Access Constraints
-
-- field_name: useConstraints
-  label: Use Constraints
-
-- field_name: distributionLiability
-  label: Distribution Liability
-
-## "Distributor_Contact"
-- field_name: distributorContact
-  label: Distributor Contact
-  preset: composite
-  subfields:
-  - field_name: contactPerson
-    label: Contact Person
-  - field_name: contactOrganization
-    label: Contact Organization
-  - field_name: contactPosition
-    label: Contact Position
-  - field_name: telephone
-    label: Voice Telephone
-    preset: repeating_text
-    form_blanks: 2
-  - field_name: email
-    label: Email
-    preset: repeating_text
-    form_blanks: 2
-#  - field_name: fax
-#    label: Fax
-#    preset: repeating_text
-#    form_blanks: 2
-#  - field_name: hoursOfService
-#    label: Hours of Service
-#  - field_name: contactInstructions
-#    label: Contact Instructions
-
-## "Distributor_Contact_Address"
-- field_name: distributorContactAddress
-  label: Distributor Contact Address
-  preset: composite_repeating
-  form_blanks: 1
-  subfields:
-  - field_name: addressType
-    label: Address Type
-  - field_name: address
-    label: Address
-  - field_name: city
-    label: City
-  - field_name: state
-    label: State
-  - field_name: postalCode
-    label: Postal Code
-  - field_name: country
-    label: Country
 
 ## CKAN Resource Fields
 resource_fields:
