@@ -34,11 +34,13 @@ ckanext.cnra_schema:schemas/dataset.yaml
 
         if harvest_source_type == 'fgdc':
             modified_package_dict = self.get_fgdc_package_dict(data_dict)
+            return modified_package_dict
 
         elif harvest_source_type == 'waf':
             modified_package_dict = self.get_waf_package_dict(data_dict)
+            return modified_package_dict
         
-        return modified_package_dict
+        return data_dict.get('package_dict', {})
 
 
     def get_fgdc_package_dict(self, data_dict):
