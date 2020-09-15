@@ -1,10 +1,13 @@
+import json
+import logging
+
+import ckanext.cnra_schema.helpers as cnra_schema_helpers
+
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
-import json
 from markupsafe import Markup
 
-import logging
 log = logging.getLogger(__name__)
 
 class cnraSchema(SingletonPlugin):
@@ -26,6 +29,21 @@ ckanext.cnra_schema:schemas/dataset.yaml
 """
 
     def get_package_dict(self, context, data_dict):
+        harvest_object = data_dict['harvest_object']
+        harvest_source_type = harvest_object.source.type
+
+        if harvest_source_type == 'csw_fgdc':
+            modified_package_dict = self.get_fgdc_package_dict(data_dict)
+            return modified_package_dict
+
+        elif harvest_source_type == 'waf':
+            modified_package_dict = self.get_waf_package_dict(data_dict)
+            return modified_package_dict
+        
+        return data_dict.get('package_dict', {})
+
+
+    def get_fgdc_package_dict(self, data_dict):
         package_dict = data_dict['package_dict']
         fgdc_values = data_dict['fgdc_values']
 
@@ -352,3 +370,29 @@ ckanext.cnra_schema:schemas/dataset.yaml
         }
 
         return(contact_values)
+
+
+    def get_waf_package_dict(self, data_dict):
+        harvest_object = data_dict['harvest_object']
+        config_str = harvest_object.job.source.config
+        harvest_job_config = json.loads(config_str)
+
+        package_dict = data_dict['package_dict']
+        iso_values = data_dict['iso_values']
+
+        if 'extras' not in package_dict:
+            package_dict['extras'] = []
+
+        # set the mapping fields its corresponding default_values
+        map_fields = harvest_job_config.get('map_fields', [])
+        package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
+
+        # set the publisher
+        publisher_mapping = harvest_job_config.get('publisher', {})
+        package_dict = cnra_schema_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
+
+        # set the contact point
+        contact_point_mapping = harvest_job_config.get('contact_point', {})
+        package_dict = cnra_schema_helpers.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
+
+        return package_dict
