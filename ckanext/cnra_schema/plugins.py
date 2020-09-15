@@ -32,7 +32,7 @@ ckanext.cnra_schema:schemas/dataset.yaml
         harvest_object = data_dict['harvest_object']
         harvest_source_type = harvest_object.source.type
 
-        if harvest_source_type == 'fgdc':
+        if harvest_source_type == 'csw_fgdc':
             modified_package_dict = self.get_fgdc_package_dict(data_dict)
             return modified_package_dict
 
