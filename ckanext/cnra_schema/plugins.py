@@ -2,6 +2,7 @@ import json
 import logging
 
 import ckanext.cnra_schema.helpers as cnra_schema_helpers
+import ckanext.cnra_schema.waf_helpers as waf_harvest_helpers
 
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
@@ -383,16 +384,83 @@ ckanext.cnra_schema:schemas/dataset.yaml
         if 'extras' not in package_dict:
             package_dict['extras'] = []
 
+        package_dict['public_access_level'] = 'Public'
+
         # set the mapping fields its corresponding default_values
         map_fields = harvest_job_config.get('map_fields', [])
-        package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
+        package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
 
         # set the publisher
         publisher_mapping = harvest_job_config.get('publisher', {})
-        package_dict = cnra_schema_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
+        package_dict = waf_harvest_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
 
         # set the contact point
         contact_point_mapping = harvest_job_config.get('contact_point', {})
-        package_dict = cnra_schema_helpers.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
+        package_dict = waf_harvest_helpers.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
+
+        package_dict = waf_harvest_helpers.set_waf_identification_information(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_keywords(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_geologic_information(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_bounding_information(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_citations(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_contacts(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_data_quality_information(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_waf_spatial_reference_information(package_dict, iso_values)
+        package_dict = waf_harvest_helpers.set_metadata_reference_information(package_dict, iso_values)
+
+        return package_dict
+
+    def map_extra_waf_metadata_to_package_dict(self, package_dict, iso_values):
+        package_dict['public_access_level'] = 'Public'
+
+        limitations = iso_values['access-constraints']
+        if isinstance(limitations, list):
+            limitations = ', '.join(str(x) for x in limitations)
+        package_dict['limitations'] = limitations
+
+        package_dict['purpose'] = iso_values.get('purpose')
+        package_dict['maintenanceAndUpdateFrequency'] = iso_values.get('frequency-of-update')
+
+        # Bounding coordinates
+        bbox = {}
+        if len(iso_values['bbox']) > 0:
+            bbox = iso_values['bbox'][0]
+        bounding_coordinate = {
+            'northBoundingCoordinate': bbox.get('north', ''),
+            'eastBoundingCoordinate': bbox.get('east', ''),
+            'southBoundingCoordinate': bbox.get('south', ''),
+            'westBoundingCoordinate': bbox.get('west', '')
+        }
+        bounding_coordinate = json.dumps(bounding_coordinate)
+        package_dict['boundingCoordinate'] = bounding_coordinate
+
+        useContrainsts = iso_values['use-constraints'] + iso_values['limitations-on-public-access']
+        if isinstance(useContrainsts, list):
+            useContrainsts = ', '.join(str(x) for x in useContrainsts)
+        package_dict['useConstraints'] = useContrainsts
+
+        distributor_contact = self.get_waf_contact_values(iso_values['distributor'])
+        package_dict['distributorContact'] = distributor_contact.get('contact_info')
+        package_dict['distributorContactAddress'] = distributor_contact.get('contact_address')
+
+        point_of_contact = self.get_waf_contact_values(iso_values['responsible-organisation'])
+        package_dict['pointOfContact'] = point_of_contact.get('contact_info')
+        package_dict['pointOfContactAddress'] = point_of_contact.get('contact_address')
+
+        ## (7) Metadata_Reference_Information
+
+        metadata_contact = self.get_waf_contact_values(iso_values['metadata-point-of-contact'])
+        package_dict['metadataContact'] = metadata_contact.get('contact_info')
+        package_dict['metadataContactAddress'] = metadata_contact.get('contact_address')
+
+        beginning_period = iso_values.get('temporal-extent-begin', '')
+        if isinstance(beginning_period, list):
+            beginning_period = ', '.join(str(x) for x in beginning_period)
+        package_dict['beginningTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(beginning_period)
+
+        ending_period = iso_values.get('temporal-extent-end', '')
+        if isinstance(ending_period, list):
+            ending_period = ', '.join(str(x) for x in ending_period)
+        package_dict['endingTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(ending_period)
 
         return package_dict

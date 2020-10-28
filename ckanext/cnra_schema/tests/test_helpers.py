@@ -15,7 +15,6 @@ class TestHelperFunctions(object):
 
         assert_list_equal(package_dict.get('extras'), [])
 
-
     def test_delete_from_extras_only_removes_key(self):
         package_dict = {'extras': [{'value': 'x', 'key': 'progress'},{'value': 'y', 'key': 'new_key'}]}
         key = 'progress'
@@ -40,7 +39,6 @@ class TestHelperFunctions(object):
 
         assert_dict_equal(package_dict, {})
 
-
     def test_set_waf_map_fields_from_source_values(self):
         package_dict = {}
         map_fields = [{
@@ -50,12 +48,9 @@ class TestHelperFunctions(object):
         }]
         iso_values = {'language': 'Spanish'}
 
-
-        modified_package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values,
-                                                                             map_fields)
+        modified_package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
 
         assert_equal('Spanish', modified_package_dict.get('language'))
-
 
     def test_set_waf_map_fields_from_default_values(self):
         package_dict = {}
@@ -66,8 +61,7 @@ class TestHelperFunctions(object):
         }]
         iso_values = {}
 
-        modified_package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values,
-                                                                             map_fields)
+        modified_package_dict = cnra_schema_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
 
         assert_equal('English', modified_package_dict.get('language'))
 
@@ -92,7 +86,6 @@ class TestHelperFunctions(object):
 
         assert_dict_equal({'language':'English', 'spatial_coverage':'Canada'}, modified_package_dict)
 
-
     def test_set_waf_map_fields_value_is_list(self):
         package_dict = {}
         map_fields = [{
@@ -107,7 +100,6 @@ class TestHelperFunctions(object):
 
         assert_equal('-75.57563781738281, -69.82928466796875', modified_package_dict.get('coordinate'))
 
-
     def test_set_waf_map_fields_empty_map_field(self):
         package_dict = {}
         map_fields = []
@@ -117,7 +109,6 @@ class TestHelperFunctions(object):
 
         assert_dict_equal({}, package_dict)
 
-
     def test_set_waf_publisher_values_from_iso_values(self):
         package_dict = {}
         publisher_mapping = {'publisher_field':'publisher', 'default_publisher':'Default-Publisher'}
@@ -125,7 +116,6 @@ class TestHelperFunctions(object):
         modified_package_dict = cnra_schema_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
 
         assert_equal('Test-User', modified_package_dict.get('publisher'))
-
 
     def test_set_waf_publisher_values_from_harvest_job_config(self):
         package_dict = {}
@@ -136,7 +126,6 @@ class TestHelperFunctions(object):
 
         assert_equal('Default-Publisher', modified_package_dict.get('publisher'))
 
-
     def test_set_waf_publisher_values_empty_publisher_mapping(self):
         package_dict = {}
         publisher_mapping = {}
@@ -145,7 +134,6 @@ class TestHelperFunctions(object):
                                                                              publisher_mapping)
 
         assert_dict_equal({}, package_dict)
-
 
     def test_set_waf_contact_point_from_iso_values(self):
         package_dict = {}
@@ -159,9 +147,7 @@ class TestHelperFunctions(object):
         modified_package_dict = cnra_schema_helpers.set_waf_contact_point(package_dict, iso_values,
                                                                           contact_point_mapping)
 
-
         assert_dict_equal({'contact_name':'John Smith', 'contact_email':'test@test.com'}, package_dict)
-
 
     def test_set_waf_contact_point_from_default_values(self):
         package_dict = {}
@@ -176,7 +162,6 @@ class TestHelperFunctions(object):
                                                                           contact_point_mapping)
 
         assert_equal({'contact_name':'Default Name', 'contact_email':'test@default.com'}, package_dict)
-
 
     def test_set_waf_contact_point_empty_mapping(self):
         package_dict = {}
