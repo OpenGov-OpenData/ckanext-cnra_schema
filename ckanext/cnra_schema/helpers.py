@@ -48,8 +48,8 @@ def get_date_and_time_dict(date_timestamp):
 
 
 def convert_list_to_string(list_to_convert):
-    str1 = u' ,'
+    str1 = ' ;'
     for item in list_to_convert:
-        str1 = str1.join(str(item)).encode('utf-8')
+        str1 = str1.join(str(item))
 
     return str1
