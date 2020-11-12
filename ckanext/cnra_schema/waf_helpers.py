@@ -3,7 +3,6 @@ from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 
 import json
 import logging
-import time
 
 log = logging.getLogger(__name__)
 
@@ -56,11 +55,8 @@ def set_waf_map_fields(package_dict, iso_values, map_fields):
             source_field = map_field.get('source')
             target_field = map_field.get('target')
             default_value = map_field.get('default')
-            value = iso_values.get(source_field, default_value)
-
             # If value is a list, convert to string
-            if isinstance(value, list):
-                value = cnra_schema_helpers.convert_list_to_string(value)
+            value = cnra_schema_helpers.convert_list_to_string(iso_values.get(source_field, default_value))
 
             package_dict[target_field] = value
 
@@ -137,27 +133,22 @@ def set_waf_identification_information(package_dict, iso_values):
         time_period_of_content = json.dumps(time_period_of_content)
         package_dict['timePeriodOfContent'] = time_period_of_content
 
-    beginning_period = iso_values.get('temporal-extent-begin', '')
-    if isinstance(beginning_period, list):
-        beginning_period = cnra_schema_helpers.convert_list_to_string(beginning_period)
+    beginning_period = cnra_schema_helpers.convert_list_to_string(iso_values.get('temporal-extent-begin', ''))
     package_dict['beginningTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(beginning_period)
 
-    ending_period = iso_values.get('temporal-extent-end', '')
-    if isinstance(ending_period, list):
-        ending_period = cnra_schema_helpers.convert_list_to_string(ending_period)
+    ending_period = cnra_schema_helpers.convert_list_to_string(iso_values.get('temporal-extent-end', ''))
     package_dict['endingTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(ending_period)
 
-    limitations = iso_values['access-constraints']
-    if isinstance(limitations, list):
-        limitations = cnra_schema_helpers.convert_list_to_string(limitations)
+    limitations = cnra_schema_helpers.convert_list_to_string(iso_values['access-constraints'])
     package_dict['limitations'] = limitations
 
     package_dict['purpose'] = iso_values.get('purpose')
     package_dict['maintenanceAndUpdateFrequency'] = iso_values.get('frequency-of-update')
 
-    use_constraints = iso_values['use-constraints'] + iso_values['limitations-on-public-access']
-    if isinstance(use_constraints, list):
-        use_constraints = cnra_schema_helpers.convert_list_to_string(use_constraints)
+    iso_use_constraints = cnra_schema_helpers.convert_list_to_string(iso_values['use-constraints'])
+    iso_limitations_on_public_access = cnra_schema_helpers.convert_list_to_string(iso_values['limitations-on-public-access'])
+
+    use_constraints = iso_use_constraints + ' ' + iso_limitations_on_public_access
     package_dict['useConstraints'] = use_constraints
 
     return package_dict
@@ -188,11 +179,11 @@ def set_waf_keywords(package_dict, iso_values):
             else:
                 continue
 
-    package_dict['themeKeywords'] = cnra_schema_helpers.convert_list_to_string(theme_keywords)
-    package_dict['placeKeywords'] = cnra_schema_helpers.convert_list_to_string(place_keywords)
-    package_dict['stratumKeywords'] = cnra_schema_helpers.convert_list_to_string(stratum_keywords)
-    package_dict['temporalKeywords'] = cnra_schema_helpers.convert_list_to_string(temporal_keywords)
-    package_dict['taxonKeywords'] = cnra_schema_helpers.convert_list_to_string(taxon_keywords)
+    package_dict['themeKeywords'] = cnra_schema_helpers.convert_list_to_string(theme_keywords, ', ')
+    package_dict['placeKeywords'] = cnra_schema_helpers.convert_list_to_string(place_keywords, ', ')
+    package_dict['stratumKeywords'] = cnra_schema_helpers.convert_list_to_string(stratum_keywords, ', ')
+    package_dict['temporalKeywords'] = cnra_schema_helpers.convert_list_to_string(temporal_keywords, ', ')
+    package_dict['taxonKeywords'] = cnra_schema_helpers.convert_list_to_string(taxon_keywords, ', ')
 
     return package_dict
 

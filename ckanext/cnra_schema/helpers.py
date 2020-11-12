@@ -2,6 +2,8 @@ import json
 import logging
 import time
 
+from six import text_type
+
 log = logging.getLogger(__name__)
 
 
@@ -47,9 +49,9 @@ def get_date_and_time_dict(date_timestamp):
     return period
 
 
-def convert_list_to_string(list_to_convert):
-    str1 = ' ;'
-    for item in list_to_convert:
-        str1 = str1.join(str(item))
+def convert_list_to_string(list_to_convert, delimiter=' '):
+    if isinstance(list_to_convert, list):
+        converted_str = delimiter.join(text_type(x) for x in list_to_convert)
+        return converted_str
 
-    return str1
+    return list_to_convert
