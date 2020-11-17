@@ -19,7 +19,8 @@ def delete_existing_extra_from_package_dict(key, package_dict):
 
 
 def get_date_and_time_dict(date_timestamp):
-    date_timestamp = convert_list_to_string(date_timestamp)
+    if isinstance(date_timestamp, list) and len(date_timestamp) > 0:
+        date_timestamp = date_timestamp[0]
 
     period = {
         'date': '',

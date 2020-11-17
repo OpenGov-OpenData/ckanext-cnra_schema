@@ -133,10 +133,10 @@ def set_waf_identification_information(package_dict, iso_values):
         time_period_of_content = json.dumps(time_period_of_content)
         package_dict['timePeriodOfContent'] = time_period_of_content
 
-    beginning_period = cnra_schema_helpers.convert_list_to_string(iso_values.get('temporal-extent-begin', ''))
+    beginning_period = iso_values.get('temporal-extent-begin', [])
     package_dict['beginningTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(beginning_period)
 
-    ending_period = cnra_schema_helpers.convert_list_to_string(iso_values.get('temporal-extent-end', ''))
+    ending_period = iso_values.get('temporal-extent-end', [])
     package_dict['endingTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(ending_period)
 
     limitations = cnra_schema_helpers.convert_list_to_string(iso_values.get('access-constraints', ''))
