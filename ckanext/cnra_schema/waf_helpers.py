@@ -19,24 +19,24 @@ def get_waf_contact_values(contact_field_list):
 
     if contact_field_list and len(contact_field_list) > 0:
         contact_field = contact_field_list[0]
-        contact = contact_field.get('contact-info', {})
+        contact_info_value = contact_field.get('contact-info', {})
         contact_info = {
             'contactPerson': contact_field.get('individual-name', ''),
             'contactOrganization': contact_field.get('organisation-name', ''),
-            'contactPosition': contact.get('position-name', ''),
-            'telephone': contact.get('telephone', ''),
-            'email': contact.get('email', '')
+            'contactPosition': contact_field.get('position-name', ''),
+            'telephone': contact_field.get('telephone', ''),
+            'email': contact_info_value.get('email', '')
         }
 
-        contact_address_list = contact.get('contact-address', [])
+        contact_address_list = contact_field.get('contact-address', [])
         for address in contact_address_list:
             contact_address.append({
-                'addressType': address.get('addrtype'),
-                'address': ', '.join(address.get('address')),
-                'city': address.get('city'),
-                'state': address.get('state'),
-                'postalCode': address.get('postal'),
-                'country': address.get('country')
+                'addressType': address.get('addrtype', ''),
+                'address': ''.join(address.get('address', '')),
+                'city': address.get('city', ''),
+                'state': address.get('state', ''),
+                'postalCode': address.get('postal', ''),
+                'country': address.get('country', '')
             })
 
     contact_info = json.dumps(contact_info)
@@ -56,7 +56,7 @@ def set_waf_map_fields(package_dict, iso_values, map_fields):
             target_field = map_field.get('target')
             default_value = map_field.get('default')
             # If value is a list, convert to string
-            value = cnra_schema_helpers.convert_list_to_string(iso_values.get(source_field, default_value))
+            value = cnra_schema_helpers.convert_list_to_string(iso_values.get(source_field, default_value), ', ')
 
             package_dict[target_field] = value
 
@@ -139,14 +139,14 @@ def set_waf_identification_information(package_dict, iso_values):
     ending_period = cnra_schema_helpers.convert_list_to_string(iso_values.get('temporal-extent-end', ''))
     package_dict['endingTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(ending_period)
 
-    limitations = cnra_schema_helpers.convert_list_to_string(iso_values['access-constraints'])
+    limitations = cnra_schema_helpers.convert_list_to_string(iso_values.get('access-constraints', ''))
     package_dict['limitations'] = limitations
 
     package_dict['purpose'] = iso_values.get('purpose')
-    package_dict['maintenanceAndUpdateFrequency'] = iso_values.get('frequency-of-update')
+    package_dict['maintenanceAndUpdateFrequency'] = iso_values.get('frequency-of-update', '')
 
-    iso_use_constraints = cnra_schema_helpers.convert_list_to_string(iso_values['use-constraints'])
-    iso_limitations_on_public_access = cnra_schema_helpers.convert_list_to_string(iso_values['limitations-on-public-access'])
+    iso_use_constraints = cnra_schema_helpers.convert_list_to_string(iso_values.get('use-constraints', ''))
+    iso_limitations_on_public_access = cnra_schema_helpers.convert_list_to_string(iso_values.get('limitations-on-public-access', ''))
 
     use_constraints = iso_use_constraints + ' ' + iso_limitations_on_public_access
     package_dict['useConstraints'] = use_constraints
@@ -155,7 +155,7 @@ def set_waf_identification_information(package_dict, iso_values):
 
 
 def set_waf_keywords(package_dict, iso_values):
-    keywords = iso_values['keywords']
+    keywords = iso_values.get('keywords', [])
     theme_keywords = []
     place_keywords = []
     stratum_keywords = []
@@ -203,21 +203,23 @@ def set_waf_geologic_information(package_dict, iso_values):
         package_dict['geologicAge'] = geologic_age
 
     if iso_values.get('beginning-geologic-age'):
+        beginning_geologic_age_values = iso_values.get('beginning-geologic-age')
         beginning_geologic_age = {
-            'geologicTimeScale': iso_values.get('geologic-time-scale', ''),
-            'geologicAgeEstimate': iso_values.get('geologic-age-estimate', ''),
-            'geologicAgeUncertainty': iso_values.get('geologic-age-uncertainty', ''),
-            'geologicAgeExplanation': iso_values.get('geologic-age-explanation', '')
+            'geologicTimeScale': beginning_geologic_age_values.get('geologic-time-scale', ''),
+            'geologicAgeEstimate': beginning_geologic_age_values.get('geologic-age-estimate', ''),
+            'geologicAgeUncertainty': beginning_geologic_age_values.get('geologic-age-uncertainty', ''),
+            'geologicAgeExplanation': beginning_geologic_age_values.get('geologic-age-explanation', '')
         }
         beginning_geologic_age = json.dumps(beginning_geologic_age)
         package_dict['beginningGeologicAge'] = beginning_geologic_age
 
     if iso_values.get('ending-geologic-age'):
+        ending_geologic_age_values = iso_values.get('ending-geologic-age')
         ending_geologic_age = {
-            'geologicTimeScale': iso_values.get('geologic-time-scale', ''),
-            'geologicAgeEstimate': iso_values.get('geologic-age-estimate', ''),
-            'geologicAgeUncertainty': iso_values.get('geologic-age-uncertainty', ''),
-            'geologicAgeExplanation': iso_values.get('geologic-age-explanation', '')
+            'geologicTimeScale': ending_geologic_age_values.get('geologic-time-scale', ''),
+            'geologicAgeEstimate': ending_geologic_age_values.get('geologic-age-estimate', ''),
+            'geologicAgeUncertainty': ending_geologic_age_values.get('geologic-age-uncertainty', ''),
+            'geologicAgeExplanation': ending_geologic_age_values.get('geologic-age-explanation', '')
         }
         ending_geologic_age = json.dumps(ending_geologic_age)
         package_dict['endingGeologicAge'] = ending_geologic_age
@@ -236,7 +238,7 @@ def set_waf_geologic_information(package_dict, iso_values):
         geologic_citation = json.dumps(geologic_citation)
         package_dict['geologicCitation'] = geologic_citation
 
-    if iso_values.get('geographicExtentDescription'):
+    if iso_values.get('geographic-extent-description'):
         package_dict['geographicExtentDescription'] = iso_values['geographic-extent-description']
 
     return package_dict
@@ -245,7 +247,7 @@ def set_waf_geologic_information(package_dict, iso_values):
 def set_waf_bounding_information(package_dict, iso_values):
     # Bounding coordinates
     bbox = {}
-    if len(iso_values['bbox']) > 0:
+    if iso_values.get('bbox', '') and len(iso_values['bbox']) > 0:
         bbox = iso_values['bbox'][0]
     bounding_coordinate = {
         'northBoundingCoordinate': bbox.get('north', ''),
@@ -303,13 +305,14 @@ def set_waf_contacts(package_dict, iso_values):
         package_dict['vouchersContact'] = vouchers_contact.get('contact_info')
         package_dict['vouchersContactAddress'] = vouchers_contact.get('contact_address')
 
+    if iso_values.get('vouchers-specimen'):
         package_dict['vouchersSpecimen'] = iso_values['vouchers-specimen']
 
-    distributor_contact = get_waf_contact_values(iso_values['distributor'])
+    distributor_contact = get_waf_contact_values(iso_values.get('distributor', []))
     package_dict['distributorContact'] = distributor_contact.get('contact_info')
     package_dict['distributorContactAddress'] = distributor_contact.get('contact_address')
 
-    metadata_contact = get_waf_contact_values(iso_values['metadata-point-of-contact'])
+    metadata_contact = get_waf_contact_values(iso_values.get('metadata-point-of-contact', []))
     package_dict['metadataContact'] = metadata_contact.get('contact_info')
     package_dict['metadataContactAddress'] = metadata_contact.get('contact_address')
 

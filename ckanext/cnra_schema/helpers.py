@@ -19,8 +19,7 @@ def delete_existing_extra_from_package_dict(key, package_dict):
 
 
 def get_date_and_time_dict(date_timestamp):
-    if isinstance(date_timestamp, list):
-        date_timestamp = convert_list_to_string(date_timestamp)
+    date_timestamp = convert_list_to_string(date_timestamp)
 
     period = {
         'date': '',
@@ -32,7 +31,7 @@ def get_date_and_time_dict(date_timestamp):
         try:
             time.strptime(date_timestamp, "%Y-%m-%dT%H:%M:%SZ")
             period['date'] = date_timestamp[:10]
-            period['time'] = date_timestamp[11:date_timestamp - 1]
+            period['time'] = date_timestamp[11:date_timestamp_len - 1]
 
         except ValueError:
             log.error('Error converting date and time string: {0}'.format(date_timestamp))
