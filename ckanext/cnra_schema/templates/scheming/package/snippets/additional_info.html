@@ -21,6 +21,8 @@
         and not '[]' == pkg_dict[field.field_name]
         and not '{}' == pkg_dict[field.field_name]
         and not '{"date": "", "time": ""}' == pkg_dict[field.field_name]
+        and not '{"altitudeMinimum": "", "altitudeDistanceUnits": "", "altitudeMaximum": ""}' == pkg_dict[field.field_name]
+        and not '{"email": [""], "contactOrganization": "", "contactPosition": "", "contactPerson": "", "telephone": [""]}' == pkg_dict[field.field_name]
         and (pkg_dict[field.field_name] or field.field_name in always_fields) -%}
       <tr>
         <th scope="row" class="dataset-label">{{
