@@ -2,6 +2,7 @@ import json
 import logging
 import time
 
+from dateutil.parser import parse
 from six import text_type
 
 log = logging.getLogger(__name__)
@@ -27,23 +28,13 @@ def get_date_and_time_dict(date_timestamp):
         'time': ''
     }
 
-    date_timestamp_len = len(date_timestamp)
-    if date_timestamp_len > 10:
-        try:
-            time.strptime(date_timestamp, "%Y-%m-%dT%H:%M:%SZ")
-            period['date'] = date_timestamp[:10]
-            period['time'] = date_timestamp[11:date_timestamp_len - 1]
+    try:
+        date_timestamp = parse(date_timestamp)
+        period['date'] = date_timestamp.strftime("%Y-%m-%d")
+        period['time'] = date_timestamp.strftime("%H:%M:%S")
 
-        except ValueError:
-            log.error('Error converting date and time string: {0}'.format(date_timestamp))
-
-    elif date_timestamp_len == 10:
-        try:
-            time.strptime(date_timestamp, "%Y-%m-%d")
-            period['date'] = date_timestamp
-
-        except ValueError:
-            log.error('Error converting date string: {0}'.format(date_timestamp))
+    except ValueError:
+        log.error('Error converting date and time string: {0}'.format(date_timestamp))
 
     period = json.dumps(period)
     return period
