@@ -1,7 +1,7 @@
 import json
 import logging
 
-import ckanext.cnra_schema.helpers as cnra_schema_helpers
+import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
 import ckanext.cnra_schema.waf_helpers as waf_harvest_helpers
 
 from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements

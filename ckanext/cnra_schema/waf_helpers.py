@@ -1,4 +1,4 @@
-import ckanext.cnra_schema.helpers as cnra_schema_helpers
+import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 
 import json
@@ -56,12 +56,12 @@ def set_waf_map_fields(package_dict, iso_values, map_fields):
             target_field = map_field.get('target')
             default_value = map_field.get('default')
             # If value is a list, convert to string
-            value = cnra_schema_helpers.convert_list_to_string(iso_values.get(source_field, default_value), ', ')
+            value = cnra_schema_utils.convert_list_to_string(iso_values.get(source_field, default_value), ', ')
 
             package_dict[target_field] = value
 
             # Remove from extras any keys present in the config
-            cnra_schema_helpers.delete_existing_extra_from_package_dict(target_field, package_dict)
+            cnra_schema_utils.delete_existing_extra_from_package_dict(target_field, package_dict)
 
     return package_dict
 
@@ -75,7 +75,7 @@ def set_waf_publisher_values(package_dict, iso_values, publisher_mapping):
         package_dict[publisher_field] = publisher_name
 
         # Remove from extras any keys present in the config
-        cnra_schema_helpers.delete_existing_extra_from_package_dict(publisher_field, package_dict)
+        cnra_schema_utils.delete_existing_extra_from_package_dict(publisher_field, package_dict)
 
     return package_dict
 
@@ -90,7 +90,7 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
         package_dict[name_field] = contact_point_name
 
         # Remove from extras the name field
-        cnra_schema_helpers.delete_existing_extra_from_package_dict(name_field, package_dict)
+        cnra_schema_utils.delete_existing_extra_from_package_dict(name_field, package_dict)
 
     if email_field:
         contact_point_email = iso_values.get('contact-email') or \
@@ -98,7 +98,7 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
         package_dict[email_field] = contact_point_email
 
         # Remove from extras the email field
-        cnra_schema_helpers.delete_existing_extra_from_package_dict(email_field, package_dict)
+        cnra_schema_utils.delete_existing_extra_from_package_dict(email_field, package_dict)
 
     return package_dict
 
@@ -134,19 +134,19 @@ def set_waf_identification_information(package_dict, iso_values):
         package_dict['timePeriodOfContent'] = time_period_of_content
 
     beginning_period = iso_values.get('temporal-extent-begin', [])
-    package_dict['beginningTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(beginning_period)
+    package_dict['beginningTimePeriodOfContent'] = cnra_schema_utils.get_date_and_time_dict(beginning_period)
 
     ending_period = iso_values.get('temporal-extent-end', [])
-    package_dict['endingTimePeriodOfContent'] = cnra_schema_helpers.get_date_and_time_dict(ending_period)
+    package_dict['endingTimePeriodOfContent'] = cnra_schema_utils.get_date_and_time_dict(ending_period)
 
-    limitations = cnra_schema_helpers.convert_list_to_string(iso_values.get('access-constraints', ''))
+    limitations = cnra_schema_utils.convert_list_to_string(iso_values.get('access-constraints', ''))
     package_dict['limitations'] = limitations
 
     package_dict['purpose'] = iso_values.get('purpose')
     package_dict['maintenanceAndUpdateFrequency'] = iso_values.get('frequency-of-update', '')
 
-    iso_use_constraints = cnra_schema_helpers.convert_list_to_string(iso_values.get('use-constraints', ''))
-    iso_limitations_on_public_access = cnra_schema_helpers.convert_list_to_string(iso_values.get('limitations-on-public-access', ''))
+    iso_use_constraints = cnra_schema_utils.convert_list_to_string(iso_values.get('use-constraints', ''))
+    iso_limitations_on_public_access = cnra_schema_utils.convert_list_to_string(iso_values.get('limitations-on-public-access', ''))
 
     use_constraints = iso_use_constraints + ' ' + iso_limitations_on_public_access
     package_dict['useConstraints'] = use_constraints
@@ -179,11 +179,11 @@ def set_waf_keywords(package_dict, iso_values):
             else:
                 continue
 
-    package_dict['themeKeywords'] = cnra_schema_helpers.convert_list_to_string(theme_keywords, ', ')
-    package_dict['placeKeywords'] = cnra_schema_helpers.convert_list_to_string(place_keywords, ', ')
-    package_dict['stratumKeywords'] = cnra_schema_helpers.convert_list_to_string(stratum_keywords, ', ')
-    package_dict['temporalKeywords'] = cnra_schema_helpers.convert_list_to_string(temporal_keywords, ', ')
-    package_dict['taxonKeywords'] = cnra_schema_helpers.convert_list_to_string(taxon_keywords, ', ')
+    package_dict['themeKeywords'] = cnra_schema_utils.convert_list_to_string(theme_keywords, ', ')
+    package_dict['placeKeywords'] = cnra_schema_utils.convert_list_to_string(place_keywords, ', ')
+    package_dict['stratumKeywords'] = cnra_schema_utils.convert_list_to_string(stratum_keywords, ', ')
+    package_dict['temporalKeywords'] = cnra_schema_utils.convert_list_to_string(temporal_keywords, ', ')
+    package_dict['taxonKeywords'] = cnra_schema_utils.convert_list_to_string(taxon_keywords, ', ')
 
     return package_dict
 
