@@ -1,4 +1,8 @@
+import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
+
 import logging
+
+from ast import literal_eval
 
 log = logging.getLogger(__name__)
 
@@ -69,3 +73,48 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
         delete_existing_extra_from_package_dict(email_field, package_dict)
 
     return package_dict
+
+
+def is_cnra_schema_field_populated(package_dict, field):
+    field_name = field.get('field_name')
+
+    if package_dict.get(field_name) and not field_name == 'spatial_details' \
+            and field.get('preset') in ['composite', 'composite_repeating']:
+
+        subfield_literal_eval = literal_eval(package_dict.get(field_name))
+
+        return is_dict_populated(subfield_literal_eval)
+
+    """"
+    NOTE: This function returns True due to the front-end calling this helper function as an AND in the conditional.
+    If this function returns False, the whole condition would be false and non-composite fields would not be included
+    in the "Additional Metadata" table.
+    """
+    return True
+
+
+def is_dict_populated(package_dict_field):
+    is_subfield_empty = False
+
+    if package_dict_field and isinstance(package_dict_field, dict):
+        return is_sub_dict_populated_recursively_impl(package_dict_field, is_subfield_empty)
+    elif isinstance(package_dict_field, list):
+        for x in package_dict_field:
+            return is_sub_dict_populated_recursively_impl(x, is_subfield_empty)
+    else:
+        return False
+
+
+def is_sub_dict_populated_recursively_impl(pkg_dict_field_sub_dict, is_dict_empty):
+    for k, v in pkg_dict_field_sub_dict.items():
+        if isinstance(v, dict):
+            is_dict_empty = is_sub_dict_populated_recursively_impl(v, is_dict_empty)
+        else:
+            if v and isinstance(v, str):
+                return True
+            elif v and isinstance(v, list):
+                converted_string = cnra_schema_utils.convert_list_to_string(v)
+                if converted_string:
+                    return True
+
+    return is_dict_empty

@@ -3,7 +3,7 @@ import logging
 
 import ckanext.cnra_schema.helpers as cnra_schema_helpers
 
-from ckan.plugins import toolkit, IConfigurer, SingletonPlugin, implements
+from ckan.plugins import toolkit, IConfigurer, ITemplateHelpers, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
 from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 from markupsafe import Markup
@@ -12,7 +12,9 @@ log = logging.getLogger(__name__)
 
 class cnraSchema(SingletonPlugin):
     implements(IConfigurer)
+    implements(ITemplateHelpers)
     implements(ISpatialHarvester, inherit=True)
+
 
     def update_config(self, config):
         toolkit.add_resource('fanstatic', 'cnra_schema')
@@ -27,6 +29,9 @@ ckanext.composite:presets.json
         config['scheming.dataset_schemas'] = """
 ckanext.cnra_schema:schemas/dataset.yaml
 """
+
+    def get_helpers(self):
+        return {'is_cnra_schema_field_populated': cnra_schema_helpers.is_cnra_schema_field_populated}
 
     def get_package_dict(self, context, data_dict):
         harvest_object = data_dict['harvest_object']

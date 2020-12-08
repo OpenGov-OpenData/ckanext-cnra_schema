@@ -186,3 +186,72 @@ class TestHelperFunctions(object):
                                                                           contact_point_mapping)
 
         assert_dict_equal({}, package_dict)
+
+    def test_is_cnra_schema_field_populated_success_preset_composite(self):
+        result = cnra_schema_helpers.is_cnra_schema_field_populated(
+            {'sub_dict': "{'a': '1'}"}, {'field_name': 'sub_dict', 'preset': 'composite'})
+
+        assert result
+
+    def test_is_cnra_schema_field_populated_success_preset_composite_repeating(self):
+        result = cnra_schema_helpers.is_cnra_schema_field_populated(
+            {'sub_dict': "{'a': '1'}"}, {'field_name': 'sub_dict', 'preset': 'composite-repeating'})
+
+        assert result
+
+    def test_is_cnra_schema_field_populated_success_field_name_spatial_details(self):
+        result = cnra_schema_helpers.is_cnra_schema_field_populated(
+            {}, {'field_name': 'spatial_details', 'preset': 'composite'})
+
+        assert result
+
+    def test_is_cnra_schema_field_populated_failure_empty_field_in_package_dict(self):
+        result = cnra_schema_helpers.is_cnra_schema_field_populated(
+            {'sub_dict': "{'a': ''}"}, {'field_name': 'sub_dict', 'preset': 'composite'})
+
+        assert not result
+
+    def test_is_dict_populated_success_populated_simple_field_dict(self):
+        result = cnra_schema_helpers.is_dict_populated({'sub_dict': "{'a': '1'}"})
+
+        assert result
+
+    def test_is_dict_populated_success_populated_multi_field_dict(self):
+        result = cnra_schema_helpers.is_dict_populated({'sub_dict': "{'a': '', 'b: '2'}"})
+
+        assert result
+
+    def test_is_dict_populated_failure_populated_field_is_empty_dict(self):
+        result = cnra_schema_helpers.is_dict_populated({})
+
+        assert not result
+
+    def test_is_dict_populated_failure_populated_field_is_empty_valued_dict(self):
+        result = cnra_schema_helpers.is_dict_populated({'a': '', 'b': ''})
+
+        assert not result
+
+    def test_is_dict_populated_failure_populated_field_is_empty_list(self):
+        result = cnra_schema_helpers.is_dict_populated([])
+
+        assert not result
+
+    def test_is_dict_populated_success_populated_field_is_list_of_dicts(self):
+        result = cnra_schema_helpers.is_dict_populated([{'a': '1'}, {'b': '2'}])
+
+        assert result
+
+    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_populated_single_dict(self):
+        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': '1'}}, False)
+
+        assert result
+
+    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_populated_multi_dict(self):
+        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': ''}, 'a': {'aa': '1'}}, False)
+
+        assert result
+
+    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_empty_dict(self):
+        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': ''}}, False)
+
+        assert not result

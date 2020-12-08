@@ -18,11 +18,7 @@
   {%- for field in schema.dataset_fields -%}
     {%- if field.field_name not in exclude_fields
         and field.display_snippet is not none
-        and not '[]' == pkg_dict[field.field_name]
-        and not '{}' == pkg_dict[field.field_name]
-        and not '{"date": "", "time": ""}' == pkg_dict[field.field_name]
-        and not '{"altitudeMinimum": "", "altitudeDistanceUnits": "", "altitudeMaximum": ""}' == pkg_dict[field.field_name]
-        and not '{"email": [""], "contactOrganization": "", "contactPosition": "", "contactPerson": "", "telephone": [""]}' == pkg_dict[field.field_name]
+        and h.is_cnra_schema_field_populated(pkg_dict, field)
         and (pkg_dict[field.field_name] or field.field_name in always_fields) -%}
       <tr>
         <th scope="row" class="dataset-label">{{
