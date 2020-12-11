@@ -15,7 +15,7 @@ def delete_existing_extra_from_package_dict(key, package_dict):
             existing_extra = extra
 
     if existing_extra:
-        package_dict['extras'].remove(existing_extra)
+        extras_list.remove(existing_extra)
 
 
 def get_date_and_time_dict(date_timestamp):
