@@ -19,29 +19,29 @@ def delete_existing_extra_from_package_dict(key, package_dict):
 
 
 def get_date_and_time_dict(date_timestamp):
+    original_date_timestamp_string = ''
     if isinstance(date_timestamp, list) and len(date_timestamp) > 0:
-        date_timestamp = date_timestamp[0]
+        original_date_timestamp_string = date_timestamp[0]
 
     period = {
         'date': '',
         'time': ''
     }
 
-    if date_timestamp:
-        try:
-            date_timestamp = parse(date_timestamp)
-            date = date_timestamp.strftime('%Y-%m-%d')
-            time = date_timestamp.strftime('%H:%M:%S')
+    try:
+        if original_date_timestamp_string:
+            date_timestamp_parsed = parse(original_date_timestamp_string)
+            date = date_timestamp_parsed.strftime('%Y-%m-%d')
+            time = date_timestamp_parsed.strftime('%H:%M:%S')
 
             period['date'] = date
 
-            if not '00:00:00' == time:
+            if ':' in original_date_timestamp_string:
                 period['time'] = time
 
-        except ValueError:
-            log.error('Error converting date and time string: {0}'.format(date_timestamp))
+    finally:
+        period = json.dumps(period)
 
-    period = json.dumps(period)
     return period
 
 

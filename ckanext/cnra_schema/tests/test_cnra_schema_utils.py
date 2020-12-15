@@ -38,13 +38,13 @@ class TestHelperFunctions(object):
         assert_dict_equal(package_dict, {})
 
     def test_get_time_date_and_time_dict_success_timestamp(self):
-        date_timestamp = '2010-07-23T14:19:59Z'
+        date_timestamp = ['2010-07-23T14:19:59Z']
         new_date_timestamp = cnra_schema_utils.get_date_and_time_dict(date_timestamp)
 
         assert_equal(new_date_timestamp, '{\"date\": \"2010-07-23\", \"time\": \"14:19:59\"}')
 
     def test_get_time_date_and_time_dict_success_only_date(self):
-        date_timestamp = '2010-07-23'
+        date_timestamp = ['2010-07-23']
         new_date_timestamp = cnra_schema_utils.get_date_and_time_dict(date_timestamp)
 
         assert_equal(new_date_timestamp, '{\"date\": \"2010-07-23\", \"time\": \"\"}')
