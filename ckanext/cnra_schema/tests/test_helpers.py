@@ -211,47 +211,47 @@ class TestHelperFunctions(object):
 
         assert not result
 
-    def test_is_dict_populated_success_populated_simple_field_dict(self):
-        result = cnra_schema_helpers.is_dict_populated({'sub_dict': "{'a': '1'}"})
-
-        assert result
-
-    def test_is_dict_populated_success_populated_multi_field_dict(self):
-        result = cnra_schema_helpers.is_dict_populated({'sub_dict': "{'a': '', 'b: '2'}"})
-
-        assert result
-
-    def test_is_dict_populated_failure_populated_field_is_empty_dict(self):
-        result = cnra_schema_helpers.is_dict_populated({})
+    def test_is_dict_empty_success_populated_simple_field_dict(self):
+        result = cnra_schema_helpers.is_dict_empty({'sub_dict': "{'a': '1'}"})
 
         assert not result
 
-    def test_is_dict_populated_failure_populated_field_is_empty_valued_dict(self):
-        result = cnra_schema_helpers.is_dict_populated({'a': '', 'b': ''})
+    def test_is_dict_empty_success_populated_multi_field_dict(self):
+        result = cnra_schema_helpers.is_dict_empty({'sub_dict': "{'a': '', 'b: '2'}"})
 
         assert not result
 
-    def test_is_dict_populated_failure_populated_field_is_empty_list(self):
-        result = cnra_schema_helpers.is_dict_populated([])
+    def test_is_dict_empty_failure_populated_field_is_empty_dict(self):
+        result = cnra_schema_helpers.is_dict_empty({})
+
+        assert result
+
+    def test_is_dict_empty_failure_populated_field_is_empty_valued_dict(self):
+        result = cnra_schema_helpers.is_dict_empty({'a': '', 'b': ''})
+
+        assert result
+
+    def test_is_dict_empty_failure_populated_field_is_empty_list(self):
+        result = cnra_schema_helpers.is_dict_empty([])
+
+        assert result
+
+    def test_is_dict_empty_success_populated_field_is_list_of_dicts(self):
+        result = cnra_schema_helpers.is_dict_empty([{'a': '1'}, {'b': '2'}])
 
         assert not result
-
-    def test_is_dict_populated_success_populated_field_is_list_of_dicts(self):
-        result = cnra_schema_helpers.is_dict_populated([{'a': '1'}, {'b': '2'}])
-
-        assert result
-
-    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_populated_single_dict(self):
-        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': '1'}}, False)
-
-        assert result
-
-    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_populated_multi_dict(self):
-        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': ''}, 'a': {'aa': '1'}}, False)
-
-        assert result
-
-    def test_is_sub_dict_populated_recursively_impl_nested_dict_success_nested_empty_dict(self):
-        result = cnra_schema_helpers.is_sub_dict_populated_recursively_impl({'a': {'aa': ''}}, False)
-
-        assert not result
+    #
+    # def test_is_inner_dict_populated_recursively_impl_nested_dict_success_nested_populated_single_dict(self):
+    #     result = cnra_schema_helpers.is_inner_dict_populated_recursively_impl({'a': {'aa': '1'}})
+    #
+    #     assert result
+    #
+    # def test_is_inner_dict_populated_recursively_impl_nested_dict_success_nested_populated_multi_dict(self):
+    #     result = cnra_schema_helpers.is_inner_dict_populated_recursively_impl({'a': {'aa': ''}, 'a': {'aa': '1'}})
+    #
+    #     assert result
+    #
+    # def test_is_inner_dict_populated_recursively_impl_nested_dict_success_nested_empty_dict(self):
+    #     result = cnra_schema_helpers.is_inner_dict_populated_recursively_impl({'a': {'aa': ''}})
+    #
+    #     assert not result

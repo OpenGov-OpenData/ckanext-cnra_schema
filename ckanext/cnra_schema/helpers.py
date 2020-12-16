@@ -81,9 +81,14 @@ def is_cnra_schema_field_populated(package_dict, field):
     if package_dict.get(field_name) and field_name not in 'spatial_details' \
             and field.get('preset') in ['composite', 'composite_repeating']:
 
-        subfield_literal_eval = literal_eval(package_dict.get(field_name))
+        subfield_literal_eval = {}
+        try:
+            subfield_literal_eval = literal_eval(package_dict[field_name])
+        except (ValueError, SyntaxError) as e:
+            log.debug('Unable to evaluate field in package_diction: {0} | value: {1}'
+                      .format(field_name, package_dict.get(field_name)))
 
-        return is_dict_populated(subfield_literal_eval)
+        return not is_dict_empty(subfield_literal_eval)
 
     """"
     NOTE: This function returns True due to the front-end calling this helper function as an AND in the conditional.
@@ -93,28 +98,24 @@ def is_cnra_schema_field_populated(package_dict, field):
     return True
 
 
-def is_dict_populated(package_dict_field):
-    is_subfield_empty = False
-
+def is_dict_empty(package_dict_field):
     if package_dict_field and isinstance(package_dict_field, dict):
-        return is_sub_dict_populated_recursively_impl(package_dict_field, is_subfield_empty)
-    elif isinstance(package_dict_field, list):
-        is_subfield_list_populate = [is_sub_dict_populated_recursively_impl(x, is_subfield_empty)
-                                     for x in package_dict_field]
-        return True in is_subfield_list_populate
-    else:
-        return False
+        return is_inner_dict_empty_recursively_impl(package_dict_field)
+    elif package_dict_field and isinstance(package_dict_field, list):
+        return any([is_inner_dict_empty_recursively_impl(x) for x in package_dict_field])
+
+    return True
 
 
-def is_sub_dict_populated_recursively_impl(pkg_dict_field_sub_dict, is_dict_empty):
+def is_inner_dict_empty_recursively_impl(pkg_dict_field_sub_dict):
     for v in pkg_dict_field_sub_dict.values():
         if isinstance(v, dict):
-            is_dict_empty = is_sub_dict_populated_recursively_impl(v, is_dict_empty)
+            return is_inner_dict_empty_recursively_impl(v)
         elif v and isinstance(v, str):
-            return True
+            return False
         elif v and isinstance(v, list):
             converted_string = cnra_schema_utils.convert_list_to_string(v)
             if converted_string:
-                return True
+                return False
 
-    return is_dict_empty
+    return True
