@@ -49,6 +49,18 @@ class TestHelperFunctions(object):
 
         assert_equal(new_date_timestamp, '{\"date\": \"2010-07-23\", \"time\": \"\"}')
 
+    def test_get_time_date_and_time_dict_success_year_less_than_1900_with_timestamp(self):
+        date_timestamp = ['1850-07-23T14:19:59Z']
+        new_date_timestamp = cnra_schema_utils.get_date_and_time_dict(date_timestamp)
+
+        assert_equal(new_date_timestamp, '{\"date\": \"1850-07-23\", \"time\": \"14:19:59\"}')
+
+    def test_get_time_date_and_time_dict_success_year_less_than_1900_without_timestamp(self):
+        date_timestamp = ['1850-07-23T']
+        new_date_timestamp = cnra_schema_utils.get_date_and_time_dict(date_timestamp)
+
+        assert_equal(new_date_timestamp, '{\"date\": \"1850-07-23\", \"time\": \"\"}')
+
     def test_get_time_date_and_time_dict_failure_empty_string(self):
         date_timestamp = ''
         new_date_timestamp = cnra_schema_utils.get_date_and_time_dict(date_timestamp)

@@ -31,8 +31,19 @@ def get_date_and_time_dict(date_timestamp):
     try:
         if original_date_timestamp_string:
             date_timestamp_parsed = parse(original_date_timestamp_string)
-            date = date_timestamp_parsed.strftime('%Y-%m-%d')
-            time = date_timestamp_parsed.strftime('%H:%M:%S')
+            date = ''
+            time = ''
+
+            if date_timestamp_parsed.year < 1900:
+                date_timestamp_tokens = original_date_timestamp_string.strip().split("T")
+                date = date_timestamp_tokens[0]
+
+                if len(date_timestamp_tokens) > 1:
+                    time_tokens = date_timestamp_tokens[1].strip().split("Z")
+                    time = time_tokens[0]
+            else:
+                date = date_timestamp_parsed.strftime('%Y-%m-%d')
+                time = date_timestamp_parsed.strftime('%H:%M:%S')
 
             period['date'] = date
 
