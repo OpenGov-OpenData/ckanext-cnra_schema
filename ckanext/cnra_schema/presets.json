@@ -18,14 +18,6 @@
         "display_snippet": "contact_address_composite_repeating.html",
          "validators": "composite_repeating_group2json"
       }
-    },
-    {
-      "preset_name": "geologic_age_composite",
-      "values": {
-        "form_snippet": "composite.html",
-        "display_snippet": "geologic_age_composite.html",
-         "validators": "composite_group2json"
-      }
     }
   ]
 }

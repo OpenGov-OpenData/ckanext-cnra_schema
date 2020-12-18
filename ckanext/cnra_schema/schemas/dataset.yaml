@@ -668,7 +668,7 @@ dataset_fields:
 
 - field_name: beginningGeologicAge
   label: Beginning Geologic Age
-  preset: geologic_age_composite
+  preset: cnra_composite_repeating
   subfields:
   - field_name: geologicTimeScale
     label: Geologic Time Scale
@@ -681,7 +681,7 @@ dataset_fields:
 
 - field_name: endingGeologicAge
   label: Ending Geologic Age
-  preset: geologic_age_composite
+  preset: cnra_composite_repeating
   subfields:
   - field_name: geologicTimeScale
     label: Geologic Time Scale

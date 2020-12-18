@@ -78,12 +78,8 @@ def composite_repeating_get_formatted_contact_address_dict(package_dict_field):
     address_line1 = package_dict_field['address']
     address_line2 = ''
 
-    for key in ['city', 'state', 'postalCode', 'country']:
-        if package_dict_field[key]:
-            if key == 'city':
-                address_line2 = package_dict_field[key] + ', '
-            else:
-                address_line2 = address_line2 + package_dict_field[key] + ' '
+    address_line2 = '{0}, {1} {2} {3}'.format(package_dict_field['city'], package_dict_field['state'],
+                                              package_dict_field['postalCode'], package_dict_field['country'])
 
     address_dict = {
         'addressLine1': address_line1,
@@ -122,6 +118,7 @@ def is_dict_populated(package_dict_field):
     :param package_dict_field:
     :return: Boolean value depending on if the composite field is populated
     """
+    primitive_types = (str, int, float, complex, bool, bytes)
     is_dict_populated_bool = False
     if isinstance(package_dict_field, dict):
         for val in package_dict_field.values():
@@ -129,7 +126,7 @@ def is_dict_populated(package_dict_field):
                 is_dict_populated_bool = is_dict_populated(val)
             elif val and isinstance(val, list):
                 is_dict_populated_bool = any((is_dict_populated(x) for x in val))
-            elif val and isinstance(val, str):
+            elif val and isinstance(val, primitive_types):
                 return True
 
             if is_dict_populated_bool:
@@ -138,8 +135,8 @@ def is_dict_populated(package_dict_field):
         for val in package_dict_field:
             if val and isinstance(val, dict):
                 is_dict_populated_bool = is_dict_populated(val)
-            else:
-                is_dict_populated_bool = bool(val)
+            elif val and isinstance(val, primitive_types):
+                is_dict_populated_bool = True
 
             if is_dict_populated_bool:
                 return True
