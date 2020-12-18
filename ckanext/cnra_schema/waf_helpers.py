@@ -379,7 +379,7 @@ def set_waf_spatial_reference_information(package_dict, iso_values):
             planar_coordinate_information = json.dumps(planar_coordinate_information)
             package_dict['planarCoordinateInformation'] = planar_coordinate_information
         except TypeError:
-            print("Unable to serialize the object {}".format(planar_coordinate_information))
+            pass
 
     if iso_values.get('horizontal-datum-name'):
         package_dict['horizontalDatumName'] = iso_values['horizontal-datum-name']
