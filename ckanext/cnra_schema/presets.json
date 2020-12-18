@@ -1,0 +1,31 @@
+{
+  "scheming_presets_version": 1,
+  "about": "scheming presets for contact address and time period of content composite repeating fields",
+  "about_url": "hhttps://github.com/OpenGov-OpenData/ckanext-cnra_schema",
+  "presets": [
+    {
+      "preset_name": "cnra_composite_repeating",
+      "values": {
+        "form_snippet": "composite_repeating.html",
+        "display_snippet": "cnra_composite_repeating.html",
+         "validators": "composite_repeating_group2json"
+      }
+    },
+    {
+      "preset_name": "contact_address_composite_repeating",
+      "values": {
+        "form_snippet": "composite_repeating.html",
+        "display_snippet": "contact_address_composite_repeating.html",
+         "validators": "composite_repeating_group2json"
+      }
+    },
+    {
+      "preset_name": "geologic_age_composite",
+      "values": {
+        "form_snippet": "composite.html",
+        "display_snippet": "geologic_age_composite.html",
+         "validators": "composite_group2json"
+      }
+    }
+  ]
+}

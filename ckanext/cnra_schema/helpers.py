@@ -1,8 +1,7 @@
 import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
+from ast import literal_eval
 
 import logging
-
-from ast import literal_eval
 
 log = logging.getLogger(__name__)
 
@@ -75,47 +74,74 @@ def set_waf_contact_point(package_dict, iso_values, contact_point_mapping):
     return package_dict
 
 
-def is_cnra_schema_field_populated(package_dict, field):
+def composite_repeating_get_formatted_contact_address_dict(package_dict_field):
+    address_line1 = package_dict_field['address']
+    address_line2 = ''
+
+    for key in ['city', 'state', 'postalCode', 'country']:
+        if package_dict_field[key]:
+            if key == 'city':
+                address_line2 = package_dict_field[key] + ', '
+            else:
+                address_line2 = address_line2 + package_dict_field[key] + ' '
+
+    address_dict = {
+        'addressLine1': address_line1,
+        'addressLine2': address_line2,
+    }
+
+    return address_dict
+
+
+def is_composite_field_populated(package_dict, field):
+    """"
+    This function checks if a composite field populated. Non-composite fields will return True by default.
+    """
     field_name = field.get('field_name')
 
     if package_dict.get(field_name) and field_name not in 'spatial_details' \
-            and field.get('preset') in ['composite', 'composite_repeating']:
+            and field.get('preset') in ['composite', 'composite_repeating', 'contact_address_composite_repeating',
+                                        'cnra_composite_repeating', 'geologic_age_composite']:
 
         subfield_literal_eval = {}
         try:
             subfield_literal_eval = literal_eval(package_dict[field_name])
         except (ValueError, SyntaxError) as e:
-            log.debug('Unable to evaluate field in package_diction: {0} | value: {1}'
+            log.debug('Unable to evaluate field {0} in package dictionary: {1}'
                       .format(field_name, package_dict.get(field_name)))
 
-        return not is_dict_empty(subfield_literal_eval)
+        return is_dict_populated(subfield_literal_eval)
 
-    """"
-    NOTE: This function returns True due to the front-end calling this helper function as an AND in the conditional.
-    If this function returns False, the whole condition would be false and non-composite fields would not be included
-    in the "Additional Metadata" table.
+    return True
+
+
+def is_dict_populated(package_dict_field):
     """
-    return True
+    Recursively checks if package dictionary field is populated. Since the field is a composite field, it will be nested
+    with either a dictionary or list.
+    :param package_dict_field:
+    :return: Boolean value depending on if the composite field is populated
+    """
+    is_dict_populated_bool = False
+    if isinstance(package_dict_field, dict):
+        for val in package_dict_field.values():
+            if val and isinstance(val, dict):
+                is_dict_populated_bool = is_dict_populated(val)
+            elif val and isinstance(val, list):
+                is_dict_populated_bool = any((is_dict_populated(x) for x in val))
+            elif val and isinstance(val, str):
+                return True
 
+            if is_dict_populated_bool:
+                return True
+    elif isinstance(package_dict_field, list):
+        for val in package_dict_field:
+            if val and isinstance(val, dict):
+                is_dict_populated_bool = is_dict_populated(val)
+            else:
+                is_dict_populated_bool = bool(val)
 
-def is_dict_empty(package_dict_field):
-    if package_dict_field and isinstance(package_dict_field, dict):
-        return is_inner_dict_empty_recursively_impl(package_dict_field)
-    elif package_dict_field and isinstance(package_dict_field, list):
-        return any([is_inner_dict_empty_recursively_impl(x) for x in package_dict_field])
+            if is_dict_populated_bool:
+                return True
 
-    return True
-
-
-def is_inner_dict_empty_recursively_impl(pkg_dict_field_sub_dict):
-    for v in pkg_dict_field_sub_dict.values():
-        if isinstance(v, dict):
-            return is_inner_dict_empty_recursively_impl(v)
-        elif v and isinstance(v, str):
-            return False
-        elif v and isinstance(v, list):
-            converted_string = cnra_schema_utils.convert_list_to_string(v)
-            if converted_string:
-                return False
-
-    return True
+    return False

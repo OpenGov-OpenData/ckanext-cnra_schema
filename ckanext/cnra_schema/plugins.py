@@ -24,6 +24,7 @@ class cnraSchema(SingletonPlugin):
 ckanext.scheming:presets.json
 ckanext.repeating:presets.json
 ckanext.composite:presets.json
+ckanext.cnra_schema:presets.json
 """
 
         config['scheming.dataset_schemas'] = """
@@ -31,7 +32,9 @@ ckanext.cnra_schema:schemas/dataset.yaml
 """
 
     def get_helpers(self):
-        return {'is_cnra_schema_field_populated': cnra_schema_helpers.is_cnra_schema_field_populated}
+        return {'is_composite_field_populated': cnra_schema_helpers.is_composite_field_populated,
+                'composite_repeating_get_formatted_contact_address_dict':
+                    cnra_schema_helpers.composite_repeating_get_formatted_contact_address_dict}
 
     def get_package_dict(self, context, data_dict):
         harvest_object = data_dict['harvest_object']
