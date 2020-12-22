@@ -1,9 +1,10 @@
-import json
-
 import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
 from nose.tools import assert_raises, assert_equal, assert_dict_equal, assert_list_equal, assert_false
 
-class TestHelperFunctions(object):
+
+class TestCnraSchemaUtils(object):
+
+    assert_dict_equal.__self__.maxDiff = None
 
     def test_delete_from_extras_success(self):
         package_dict = {'extras': [{'value':'x', 'key':'progress'}]}

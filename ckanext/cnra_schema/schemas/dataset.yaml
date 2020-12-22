@@ -340,7 +340,7 @@ dataset_fields:
 ## "Point_of_Contact_Address"
 - field_name: pointOfContactAddress
   label: Point of Contact Address
-  preset: composite_repeating
+  preset: contact_address_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: addressType
@@ -387,7 +387,7 @@ dataset_fields:
 ## "Metadata_Contact_Address"
 - field_name: metadataContactAddress
   label: Metadata Contact Address
-  preset: composite_repeating
+  preset: contact_address_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: addressType
@@ -434,7 +434,7 @@ dataset_fields:
 ## "Distributor_Contact_Address"
 - field_name: distributorContactAddress
   label: Distributor Contact Address
-  preset: composite_repeating
+  preset: contact_address_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: addressType
@@ -456,7 +456,7 @@ dataset_fields:
 ## "Time_Period_of_Content"
 - field_name: timePeriodOfContent
   label: Time Period of Content
-  preset: composite_repeating
+  preset: cnra_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: date
@@ -575,7 +575,7 @@ dataset_fields:
 ## "Taxonomy Identifier Contact Address"
 - field_name: iderContactAddress
   label: Identifier Contact Address
-  preset: composite_repeating
+  preset: contact_address_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: addressType
@@ -635,7 +635,7 @@ dataset_fields:
 ## "Taxonomy Vouchers Contact Address"
 - field_name: vouchersContactAddress
   label: Vouchers Contact Address
-  preset: composite_repeating
+  preset: contact_address_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: addressType
@@ -654,7 +654,7 @@ dataset_fields:
 ## "Geologic_Age"
 - field_name: geologicAge
   label: Geologic Age
-  preset: composite_repeating
+  preset: cnra_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: geologicTimeScale
@@ -668,7 +668,7 @@ dataset_fields:
 
 - field_name: beginningGeologicAge
   label: Beginning Geologic Age
-  preset: composite
+  preset: cnra_composite_repeating
   subfields:
   - field_name: geologicTimeScale
     label: Geologic Time Scale
@@ -681,7 +681,7 @@ dataset_fields:
 
 - field_name: endingGeologicAge
   label: Ending Geologic Age
-  preset: composite
+  preset: cnra_composite_repeating
   subfields:
   - field_name: geologicTimeScale
     label: Geologic Time Scale
@@ -748,7 +748,7 @@ resource_fields:
 
 - field_name: attribute
   label: Attribute
-  preset: composite_repeating
+  preset: cnra_composite_repeating
   form_blanks: 1
   subfields:
   - field_name: attributeLabel
