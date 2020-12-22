@@ -24,11 +24,13 @@ def is_composite_field_populated(package_dict, field):
     """"
     This function checks if a composite field populated. Non-composite fields will return True by default.
     """
+    composite_presets_list = ['composite', 'composite_repeating', 'contact_address_composite_repeating',
+                              'cnra_composite_repeating']
     field_name = field.get('field_name')
 
-    if package_dict.get(field_name) and field_name not in 'spatial_details' \
-            and field.get('preset') in ['composite', 'composite_repeating', 'contact_address_composite_repeating',
-                                        'cnra_composite_repeating']:
+    if (package_dict.get(field_name)) \
+            and field_name != 'spatial_details' \
+            and field.get('preset') in composite_presets_list:
 
         subfield_literal_eval = {}
         try:
