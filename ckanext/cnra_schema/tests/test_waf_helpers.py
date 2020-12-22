@@ -1,4 +1,4 @@
-import ckanext.cnra_schema.waf_helpers as waf_harvest_helpers
+import ckanext.cnra_schema.waf_utils as waf_harvest_utils
 from nose.tools import assert_raises, assert_equal, assert_dict_equal, assert_list_equal, assert_false
 
 
@@ -15,7 +15,7 @@ class TestWAFHelperFunctions(object):
         }]
         iso_values = {'language': 'Spanish'}
     
-        modified_package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
+        modified_package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values, map_fields)
     
         assert_equal('Spanish', modified_package_dict.get('language'))
 
@@ -28,7 +28,7 @@ class TestWAFHelperFunctions(object):
         }]
         iso_values = {}
     
-        modified_package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
+        modified_package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values, map_fields)
     
         assert_equal('English', modified_package_dict.get('language'))
     
@@ -48,7 +48,7 @@ class TestWAFHelperFunctions(object):
         ]
         iso_values = {}
     
-        modified_package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values,
                                                                        map_fields)
     
         assert_dict_equal({'language': 'English', 'spatial_coverage': 'Canada'}, modified_package_dict)
@@ -62,7 +62,7 @@ class TestWAFHelperFunctions(object):
         }]
         iso_values = {'coordinate': ['-75.57563781738281', '-69.82928466796875']}
     
-        modified_package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values,
                                                                        map_fields)
     
         assert_equal('-75.57563781738281, -69.82928466796875', modified_package_dict.get('coordinate'))
@@ -71,7 +71,7 @@ class TestWAFHelperFunctions(object):
         package_dict = {}
         map_fields = []
         iso_values = {}
-        modified_package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values,
                                                                        map_fields)
     
         assert_dict_equal({}, package_dict)
@@ -80,7 +80,7 @@ class TestWAFHelperFunctions(object):
         package_dict = {}
         publisher_mapping = {'publisher_field': 'publisher', 'default_publisher': 'Default-Publisher'}
         iso_values = {'publisher': 'Test-User'}
-        modified_package_dict = waf_harvest_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
+        modified_package_dict = waf_harvest_utils.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
     
         assert_equal('Test-User', modified_package_dict.get('publisher'))
 
@@ -88,7 +88,7 @@ class TestWAFHelperFunctions(object):
         package_dict = {}
         publisher_mapping = {'publisher_field': 'publisher', 'default_publisher': 'Default-Publisher'}
         iso_values = {}
-        modified_package_dict = waf_harvest_helpers.set_waf_publisher_values(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_publisher_values(package_dict, iso_values,
                                                                              publisher_mapping)
     
         assert_equal('Default-Publisher', modified_package_dict.get('publisher'))
@@ -97,7 +97,7 @@ class TestWAFHelperFunctions(object):
         package_dict = {}
         publisher_mapping = {}
         iso_values = {}
-        modified_package_dict = waf_harvest_helpers.set_waf_publisher_values(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_publisher_values(package_dict, iso_values,
                                                                              publisher_mapping)
     
         assert_dict_equal({}, package_dict)
@@ -111,7 +111,7 @@ class TestWAFHelperFunctions(object):
             'email_field': 'contact_email'
         }
         iso_values = {'contact': 'John Smith', 'contact-email': 'test@test.com'}
-        modified_package_dict = waf_harvest_helpers.set_waf_contact_point(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_contact_point(package_dict, iso_values,
                                                                           contact_point_mapping)
     
         assert_dict_equal({'contact_name': 'John Smith', 'contact_email': 'test@test.com'}, package_dict)
@@ -125,7 +125,7 @@ class TestWAFHelperFunctions(object):
             'email_field': 'contact_email'
         }
         iso_values = {}
-        modified_package_dict = waf_harvest_helpers.set_waf_contact_point(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_contact_point(package_dict, iso_values,
                                                                           contact_point_mapping)
     
         assert_equal({'contact_name': 'Default Name', 'contact_email': 'test@default.com'}, package_dict)
@@ -134,7 +134,7 @@ class TestWAFHelperFunctions(object):
         package_dict = {}
         contact_point_mapping = {}
         iso_values = {}
-        modified_package_dict = waf_harvest_helpers.set_waf_contact_point(package_dict, iso_values,
+        modified_package_dict = waf_harvest_utils.set_waf_contact_point(package_dict, iso_values,
                                                                           contact_point_mapping)
     
         assert_dict_equal({}, package_dict)
@@ -171,7 +171,7 @@ class TestWAFHelperFunctions(object):
                 'Access Constraints: none'
             ]
         }
-        package_dict = waf_harvest_helpers.set_waf_identification_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_identification_information({}, iso_values)
 
         assert_dict_equal(package_dict,
                           {
@@ -231,7 +231,7 @@ class TestWAFHelperFunctions(object):
                 "issue": ""
             }
         }
-        package_dict = waf_harvest_helpers.set_waf_identification_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_identification_information({}, iso_values)
 
         assert_dict_equal(package_dict,
                           {'beginningTimePeriodOfContent': '{"date": "", "time": ""}',
@@ -251,7 +251,7 @@ class TestWAFHelperFunctions(object):
                           )
 
     def test_set_waf_identification_information_failure_empty_identification_fields(self):
-        package_dict = waf_harvest_helpers.set_waf_identification_information({}, {})
+        package_dict = waf_harvest_utils.set_waf_identification_information({}, {})
 
         assert_dict_equal(package_dict,
                           {'beginningTimePeriodOfContent': '{"date": "", "time": ""}',
@@ -269,7 +269,7 @@ class TestWAFHelperFunctions(object):
                 'endangered species',
              ]}]
         }
-        package_dict = waf_harvest_helpers.set_waf_keywords({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_keywords({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'themeKeywords': u'endangered species',
@@ -322,7 +322,7 @@ class TestWAFHelperFunctions(object):
           }
         ],
         }
-        package_dict = waf_harvest_helpers.set_waf_keywords({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_keywords({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'themeKeywords': u'endangered species, genetics, fish, metapopulation, admixture, dendritic network, '
@@ -334,7 +334,7 @@ class TestWAFHelperFunctions(object):
         })
 
     def test_set_waf_keywords_success_empty_values(self):
-        package_dict = waf_harvest_helpers.set_waf_keywords({}, {})
+        package_dict = waf_harvest_utils.set_waf_keywords({}, {})
 
         assert_dict_equal(package_dict, {
             'themeKeywords': u'',
@@ -352,7 +352,7 @@ class TestWAFHelperFunctions(object):
             'beginning-geologic-citation': '',
             'geographic-extent-description': ''
         }
-        package_dict = waf_harvest_helpers.set_waf_geologic_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_geologic_information({}, iso_values)
 
         assert_dict_equal(package_dict, {})
 
@@ -387,7 +387,7 @@ class TestWAFHelperFunctions(object):
             },
             'geographic-extent-description': 'test'
         }
-        package_dict = waf_harvest_helpers.set_waf_geologic_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_geologic_information({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'geologicAge': '[{\"geologicAgeEstimate\": \"test\", \"geologicAgeExplanation\": \"test\", '
@@ -404,7 +404,7 @@ class TestWAFHelperFunctions(object):
                           )
 
     def test_set_waf_bounding_information_success_empty_bounding_values(self):
-        package_dict = waf_harvest_helpers.set_waf_bounding_information({}, {})
+        package_dict = waf_harvest_utils.set_waf_bounding_information({}, {})
 
         assert_dict_equal(package_dict, {'boundingCoordinate': '{\"westBoundingCoordinate\": \"\", '
                                                                         '\"southBoundingCoordinate\": \"\", '
@@ -425,7 +425,7 @@ class TestWAFHelperFunctions(object):
                 'altitude-units': 'meters'
             }]
         }
-        package_dict = waf_harvest_helpers.set_waf_bounding_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_bounding_information({}, iso_values)
 
         assert_dict_equal(package_dict, {'boundingAltitudes': '{\"altitudeMinimum\": "10", '
                                                                        '\"altitudeDistanceUnits\": \"meters\", '
@@ -440,7 +440,7 @@ class TestWAFHelperFunctions(object):
             'classsys-citation': '',
             'idref-citation': ''
         }
-        package_dict = waf_harvest_helpers.set_waf_citations({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_citations({}, iso_values)
 
         assert_dict_equal(package_dict, {})
 
@@ -449,7 +449,7 @@ class TestWAFHelperFunctions(object):
             'classsys-citation': {'origin': 'test'},
             'idref-citation': {'origin': 'test'}
         }
-        package_dict = waf_harvest_helpers.set_waf_citations({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_citations({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'classSysCitation': '{\"originator\": \"test\"}',
@@ -457,7 +457,7 @@ class TestWAFHelperFunctions(object):
         })
 
     def test_set_waf_contacts_success_empty_values(self):
-        package_dict = waf_harvest_helpers.set_waf_contacts({}, {})
+        package_dict = waf_harvest_utils.set_waf_contacts({}, {})
 
         assert_dict_equal(package_dict, {
             'distributorContact': '{\"email\": [\"\"], \"contactOrganization\": \"\", \"contactPosition\": \"\", '
@@ -487,7 +487,7 @@ class TestWAFHelperFunctions(object):
                 }
             ]
         }
-        package_dict = waf_harvest_helpers.set_waf_contacts({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_contacts({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'distributorContact': '{\"email\": \"\", \"contactOrganization\": \"Testers\", \"contactPosition\": \"\", '
@@ -515,7 +515,7 @@ class TestWAFHelperFunctions(object):
                 }
             ]
         }
-        package_dict = waf_harvest_helpers.set_waf_contacts({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_contacts({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'distributorContact': '{\"email\": \"test@test.com\", \"contactOrganization\": \"Testers\", '
@@ -611,7 +611,7 @@ class TestWAFHelperFunctions(object):
                 }
             ]
         }
-        package_dict = waf_harvest_helpers.set_waf_contacts({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_contacts({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'distributorContact': '{\"email\": \"test@test.com\", \"contactOrganization\": \"Testers\", '
@@ -634,7 +634,7 @@ class TestWAFHelperFunctions(object):
         })
 
     def test_set_waf_data_quality_information_success_empty_values(self):
-        modified_package_dict = waf_harvest_helpers.set_waf_data_quality_information({}, {})
+        modified_package_dict = waf_harvest_utils.set_waf_data_quality_information({}, {})
 
         assert_dict_equal(modified_package_dict, {})
 
@@ -654,7 +654,7 @@ class TestWAFHelperFunctions(object):
             'source-citation-abbreviation': 'Test',
             'distribution-liability': 'Test'
         }
-        package_dict = waf_harvest_helpers.set_waf_data_quality_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_data_quality_information({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'attributeAccuracyReport': 'Test',
@@ -669,7 +669,7 @@ class TestWAFHelperFunctions(object):
         })
 
     def test_set_waf_spatial_reference_information_success_empty_values(self):
-        package_dict = waf_harvest_helpers.set_waf_spatial_reference_information({}, {})
+        package_dict = waf_harvest_utils.set_waf_spatial_reference_information({}, {})
 
         assert_dict_equal(package_dict, {})
 
@@ -684,7 +684,7 @@ class TestWAFHelperFunctions(object):
             },
             'horizontal-datum-name': 'Test'
         }
-        package_dict = waf_harvest_helpers.set_waf_spatial_reference_information({}, iso_values)
+        package_dict = waf_harvest_utils.set_waf_spatial_reference_information({}, iso_values)
 
         assert_dict_equal(package_dict, {
             'horizontalDatumName': 'Test',
@@ -694,6 +694,6 @@ class TestWAFHelperFunctions(object):
         })
 
     def test_set_metadata_reference_information_success_empty_values(self):
-        package_dict = waf_harvest_helpers.set_metadata_reference_information({}, {})
+        package_dict = waf_harvest_utils.set_metadata_reference_information({}, {})
 
         assert_dict_equal(package_dict, {})

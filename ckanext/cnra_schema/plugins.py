@@ -2,7 +2,7 @@ import json
 import logging
 
 import ckanext.cnra_schema.helpers as cnra_schema_helpers
-import ckanext.cnra_schema.waf_helpers as waf_harvest_helpers
+import ckanext.cnra_schema.waf_utils as waf_harvest_utils
 
 from ckan.plugins import toolkit, IConfigurer, ITemplateHelpers, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
@@ -396,24 +396,24 @@ ckanext.cnra_schema:schemas/dataset.yaml
 
         # set the mapping fields its corresponding default_values
         map_fields = harvest_job_config.get('map_fields', [])
-        package_dict = waf_harvest_helpers.set_waf_map_fields(package_dict, iso_values, map_fields)
+        package_dict = waf_harvest_utils.set_waf_map_fields(package_dict, iso_values, map_fields)
 
         # set the publisher
         publisher_mapping = harvest_job_config.get('publisher', {})
-        package_dict = waf_harvest_helpers.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
+        package_dict = waf_harvest_utils.set_waf_publisher_values(package_dict, iso_values, publisher_mapping)
 
         # set the contact point
         contact_point_mapping = harvest_job_config.get('contact_point', {})
-        package_dict = waf_harvest_helpers.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
+        package_dict = waf_harvest_utils.set_waf_contact_point(package_dict, iso_values, contact_point_mapping)
 
-        package_dict = waf_harvest_helpers.set_waf_identification_information(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_keywords(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_geologic_information(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_bounding_information(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_citations(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_contacts(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_data_quality_information(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_waf_spatial_reference_information(package_dict, iso_values)
-        package_dict = waf_harvest_helpers.set_metadata_reference_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_identification_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_keywords(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_geologic_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_bounding_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_citations(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_contacts(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_data_quality_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_waf_spatial_reference_information(package_dict, iso_values)
+        package_dict = waf_harvest_utils.set_metadata_reference_information(package_dict, iso_values)
 
         return package_dict

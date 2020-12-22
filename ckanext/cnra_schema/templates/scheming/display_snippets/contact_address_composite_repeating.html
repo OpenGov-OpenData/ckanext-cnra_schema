@@ -16,8 +16,14 @@
           {{ address_dict['addressLine1'] }}
           <br>
         {% endif %}
-        {{ address_dict['addressLine2'] }}
-        <br>
+        {% if address_dict['addressLine2'] %}
+          {{ address_dict['addressLine2'] }}
+          <br>
+        {% endif %}
+        {% if address_dict['addressLine3'] %}
+          {{ address_dict['addressLine3'] }}
+          <br>
+        {% endif %}
     {% endif %}
     {%- if not loop.last %}
         <br>

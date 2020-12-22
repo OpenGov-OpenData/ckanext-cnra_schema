@@ -7,14 +7,14 @@ log = logging.getLogger(__name__)
 
 def composite_repeating_get_formatted_contact_address_dict(package_dict_field):
     address_line1 = package_dict_field['address']
-    address_line2 = ''
-
-    address_line2 = '{0}, {1} {2} {3}'.format(package_dict_field['city'], package_dict_field['state'],
-                                              package_dict_field['postalCode'], package_dict_field['country'])
+    address_line2 = '{0}, {1} {2}'.format(package_dict_field['city'], package_dict_field['state'],
+                                          package_dict_field['postalCode'])
+    address_line3 = package_dict_field['country']
 
     address_dict = {
         'addressLine1': address_line1,
         'addressLine2': address_line2,
+        'addressLine3': address_line3
     }
 
     return address_dict
@@ -28,7 +28,7 @@ def is_composite_field_populated(package_dict, field):
 
     if package_dict.get(field_name) and field_name not in 'spatial_details' \
             and field.get('preset') in ['composite', 'composite_repeating', 'contact_address_composite_repeating',
-                                        'cnra_composite_repeating', 'geologic_age_composite']:
+                                        'cnra_composite_repeating']:
 
         subfield_literal_eval = {}
         try:
