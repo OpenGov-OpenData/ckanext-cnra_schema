@@ -53,8 +53,10 @@ def is_dict_populated(package_dict_field):
     """
     primitive_types = (str, int, float, complex, bool, bytes)
     is_dict_populated_bool = False
-    if isinstance(package_dict_field, dict):
-        for val in package_dict_field.values():
+
+    if isinstance(package_dict_field, dict) or isinstance(package_dict_field, list):
+        values = package_dict_field.values() if isinstance(package_dict_field, dict) else package_dict_field
+        for val in values:
             if val and isinstance(val, dict):
                 is_dict_populated_bool = is_dict_populated(val)
             elif val and isinstance(val, list):
@@ -64,14 +66,7 @@ def is_dict_populated(package_dict_field):
 
             if is_dict_populated_bool:
                 return True
-    elif isinstance(package_dict_field, list):
-        for val in package_dict_field:
-            if val and isinstance(val, dict):
-                is_dict_populated_bool = is_dict_populated(val)
-            elif val and isinstance(val, primitive_types):
-                is_dict_populated_bool = True
-
-            if is_dict_populated_bool:
-                return True
+    elif package_dict_field and isinstance(package_dict_field, primitive_types):
+        return True
 
     return False

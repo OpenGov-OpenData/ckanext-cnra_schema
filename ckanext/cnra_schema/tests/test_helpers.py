@@ -76,6 +76,11 @@ class TestHelperFunctions(object):
 
         assert not result
 
+    def test_is_dict_populated_success_populated_field_is_dict_of_mixed_values_first_value_is_empty(self):
+        result = cnra_schema_helpers.is_dict_populated({"title": "", "onlineLinkage": ["", ""], "edition": "",
+                                                        "publicationDate": "", "geospatialDataPresentationForm": "",
+                                                        "originator": ["Amelia Earhart", "John Doe", ""]})
+
     def test_is_dict_populated_success_populated_field_is_list_of_populate_dicts(self):
         result = cnra_schema_helpers.is_dict_populated([{'a': ''}, {'b': '2'}])
 
