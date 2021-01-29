@@ -51,22 +51,26 @@ def is_dict_populated(package_dict_field):
     :param package_dict_field:
     :return: Boolean value depending on if the composite field is populated
     """
-    primitive_types = (str, int, float, complex, bool, bytes)
     is_dict_populated_bool = False
 
-    if isinstance(package_dict_field, dict) or isinstance(package_dict_field, list):
-        values = package_dict_field.values() if isinstance(package_dict_field, dict) else package_dict_field
-        for val in values:
+    if isinstance(package_dict_field, (dict, list)):
+        package_dict_field_values = []
+        if isinstance(package_dict_field, dict):
+            package_dict_field_values = package_dict_field.values()
+        else:
+            package_dict_field_values = package_dict_field
+
+        for val in package_dict_field_values:
             if val and isinstance(val, dict):
                 is_dict_populated_bool = is_dict_populated(val)
             elif val and isinstance(val, list):
                 is_dict_populated_bool = any((is_dict_populated(x) for x in val))
-            elif val and isinstance(val, primitive_types):
+            elif val:
                 return True
 
             if is_dict_populated_bool:
                 return True
-    elif package_dict_field and isinstance(package_dict_field, primitive_types):
+    elif package_dict_field:
         return True
 
     return False
