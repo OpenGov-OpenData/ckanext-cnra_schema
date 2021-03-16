@@ -57,9 +57,7 @@
       {% if key in ["DCAT Modified Date"] %}
         <tr>
           <th scope="row" class="dataset-label">{{ key }}</th>
-          <td class="dataset-details">
-            {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=value %}
-          </td>
+          <td class="dataset-details">{{ value }}</td>
         </tr>
       {% endif %}
     {% endfor %}
