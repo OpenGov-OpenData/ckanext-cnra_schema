@@ -1,0 +1,9 @@
+additional-metadata-form-css:
+  contents:
+    - css/additional_metadata_form.css
+  output: cnra_schema/%(version)s_additional_metadata_form.css
+
+composite-display-snippet-css:
+  contents:
+    - css/additional_metadata_form.css
+  output: cnra_schema/%(version)s_composite_display_snippet.css
