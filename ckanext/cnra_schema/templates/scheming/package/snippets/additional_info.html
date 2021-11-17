@@ -15,8 +15,8 @@
     ] -%}
 
 {% block package_additional_info %}
-
-  {% resource 'cnra_schema/css/composite_display_snippet.css' %}
+  {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+  {% snippet 'scheming/snippets/cnra_schema_' ~ type ~ '.html', name='cnra_schema/composite-display-snippet-css' %}
 
   {%- for field in schema.dataset_fields -%}
     {%- if field.field_name not in exclude_fields

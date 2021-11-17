@@ -18,12 +18,11 @@ class cnraSchema(SingletonPlugin):
 
 
     def update_config(self, config):
-        toolkit.add_resource('fanstatic', 'cnra_schema')
+        toolkit.add_resource('assets', 'cnra_schema')
         toolkit.add_template_directory(config, "templates")
 
         config['scheming.presets'] = """
 ckanext.scheming:presets.json
-ckanext.repeating:presets.json
 ckanext.composite:presets.json
 ckanext.cnra_schema:presets.json
 """
