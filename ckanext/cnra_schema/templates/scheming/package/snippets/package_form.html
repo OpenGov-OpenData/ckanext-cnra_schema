@@ -18,6 +18,7 @@
     might not be compatible with ckanext-scheming
     </p>
   {%- endif -%}
+
   {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
   {# This for loop is intended to display the primary metadata. More details can be found on ticket ESN-1341 #}
   {%- for field in schema.dataset_fields[:primary_metadata_cutoff] -%}
@@ -27,11 +28,12 @@
         entity_type='dataset', object_type=dataset_type -%}
     {%- endif -%}
   {%- endfor -%}
-  {# HACK: A new accordion div is being used to hide non-primary metadata fields fields under Additional Fields accordion. More details can be found on ticket ESN-1341 #}
+
+  {# HACK: An accordion div is used to hide non-primary metadata fields fields under Additional Fields accordion. More details can be found on ticket ESN-1341 #}
   <div class="accordion-toggle-extra-metadata accordion_spacing-extra-metadata collapsed" data-toggle="collapse" href="#collapse-metadata">
     <h2 class="accordion-heading-extra-metadata">Optional Advanced Fields (FGDC & EML standard support)</h2>
   </div>
-  <div id=collapse-metadata class="collapse accordion-body" >
+  <div id="collapse-metadata" class="collapse accordion-body">
     {# This for loop is intended to display additional metadata. More details can be found on ticket ESN-1341 #}
     {%- for field in schema.dataset_fields[primary_metadata_cutoff:] -%}
       {%- if field.form_snippet is not none -%}
@@ -41,17 +43,30 @@
       {%- endif -%}
     {%- endfor -%}
 
-    {%- if 'resource_fields' not in schema -%}
-      <!-- force controller to skip resource-editing step for this type -->
-      <input type="hidden" name="_ckan_phase" value="" />
-    {%- endif -%}
+    {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+  </div>
+
+  {%- if 'resource_fields' not in schema -%}
+    <!-- force controller to skip resource-editing step for this type -->
+    <input type="hidden" name="_ckan_phase" value="" />
+  {%- endif -%}
+
 {% endblock %}
 
 {% block metadata_fields %}
   {% block package_metadata_fields_custom %}
     {% block custom_fields %}
-      {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
+      {% if data.id and h.check_access('package_delete', {'id': data.id}) and data.state != 'active' %}
+        <div class="control-group form-group control-medium">
+          <label for="field-state" class="control-label">{{ _('State') }}</label>
+          <div class="controls">
+            <select class="form-control" id="field-state" name="state">
+              <option value="active" {% if data.get('state', 'none') == 'active' %} selected="selected" {% endif %}>{{ _('Active') }}</option>
+              <option value="deleted" {% if data.get('state', 'none') == 'deleted' %} selected="selected" {% endif %}>{{ _('Deleted') }}</option>
+            </select>
+          </div>
+        </div>
+      {% endif %}
     {% endblock %}
   {% endblock %}
-  </div>  
 {% endblock %}
