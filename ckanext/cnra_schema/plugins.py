@@ -6,7 +6,6 @@ import ckanext.cnra_schema.waf_utils as waf_harvest_utils
 
 from ckan.plugins import toolkit, IConfigurer, ITemplateHelpers, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
-from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
 from markupsafe import Markup
 
 log = logging.getLogger(__name__)
@@ -316,9 +315,9 @@ ckanext.cnra_schema:schemas/dataset.yaml
                         attribute = json.dumps(attribute)
                         resource['attribute'] = attribute
 
-                    res_format = guess_resource_format(url)
+                    res_format = cnra_schema_helpers.guess_resource_format(url)
                     if not res_format:
-                        res_format = guess_resource_format(res_name)
+                        res_format = cnra_schema_helpers.guess_resource_format(res_name)
                     resource['format'] = res_format
 
                     resource.update({
