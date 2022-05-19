@@ -1,5 +1,5 @@
 import ckanext.cnra_schema.cnra_schema_utils as cnra_schema_utils
-from ckanext.spatial.harvesters.csw_fgdc import guess_resource_format
+from ckanext.cnra_schema.helpers import guess_resource_format
 
 import json
 import logging
