@@ -74,7 +74,7 @@ dataset_fields:
 - field_name: contact_email
   label: Contact Email
   form_placeholder: The email for the dataset maintainer.
-  display_snippet: email.html
+  display_snippet: text.html
   required: True
 
 ## "frequency"
