@@ -1,24 +1,26 @@
 import json
 import logging
+from markupsafe import Markup
 
+import ckan.plugins as p
 import ckanext.cnra_schema.helpers as cnra_schema_helpers
 import ckanext.cnra_schema.waf_utils as waf_harvest_utils
-
-from ckan.plugins import toolkit, IConfigurer, ITemplateHelpers, SingletonPlugin, implements
 from ckanext.spatial.interfaces import ISpatialHarvester
-from markupsafe import Markup
+
 
 log = logging.getLogger(__name__)
 
-class cnraSchema(SingletonPlugin):
-    implements(IConfigurer)
-    implements(ITemplateHelpers)
-    implements(ISpatialHarvester, inherit=True)
 
+class cnraSchema(p.SingletonPlugin):
+    p.implements(p.IConfigurer)
+    p.implements(p.ITemplateHelpers)
+    p.implements(ISpatialHarvester, inherit=True)
+
+    # IConfigurer
 
     def update_config(self, config):
-        toolkit.add_resource('assets', 'cnra_schema')
-        toolkit.add_template_directory(config, "templates")
+        p.toolkit.add_resource('assets', 'cnra_schema')
+        p.toolkit.add_template_directory(config, "templates")
 
         config['scheming.presets'] = """
 ckanext.scheming:presets.json
@@ -30,10 +32,20 @@ ckanext.cnra_schema:presets.json
 ckanext.cnra_schema:schemas/dataset.yaml
 """
 
+        if 'hierarchy_form' in config.get('ckan.plugins'):
+            config['scheming.organization_schemas'] = """"
+ckanext.cnra_schema:schemas/organization.yaml
+"""
+
+    # ITemplateHelpers
+
     def get_helpers(self):
-        return {'is_composite_field_populated': cnra_schema_helpers.is_composite_field_populated,
-                'composite_repeating_get_formatted_contact_address_dict':
-                    cnra_schema_helpers.composite_repeating_get_formatted_contact_address_dict}
+        return {
+            'is_composite_field_populated':
+                cnra_schema_helpers.is_composite_field_populated,
+            'composite_repeating_get_formatted_contact_address_dict':
+                cnra_schema_helpers.composite_repeating_get_formatted_contact_address_dict
+        }
 
     def get_package_dict(self, context, data_dict):
         harvest_object = data_dict['harvest_object']
