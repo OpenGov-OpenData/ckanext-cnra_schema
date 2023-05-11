@@ -32,7 +32,7 @@ ckanext.cnra_schema:presets.json
 ckanext.cnra_schema:schemas/dataset.yaml
 """
 
-        if 'hierarchy_form' in config.get('ckan.plugins'):
+        if 'hierarchy_display' in config.get('ckan.plugins'):
             config['scheming.organization_schemas'] = """"
 ckanext.cnra_schema:schemas/organization.yaml
 """
