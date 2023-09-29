@@ -7,7 +7,6 @@ import ckanext.cnra_schema.helpers as cnra_schema_helpers
 import ckanext.cnra_schema.waf_utils as waf_harvest_utils
 from ckanext.spatial.interfaces import ISpatialHarvester
 
-
 log = logging.getLogger(__name__)
 
 
@@ -41,6 +40,8 @@ ckanext.cnra_schema:schemas/organization.yaml
 
     def get_helpers(self):
         return {
+            'is_data_dict_active':
+                cnra_schema_helpers.is_data_dict_active,
             'is_composite_field_populated':
                 cnra_schema_helpers.is_composite_field_populated,
             'composite_repeating_get_formatted_contact_address_dict':
