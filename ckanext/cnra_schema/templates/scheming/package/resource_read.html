@@ -9,7 +9,8 @@
 {%- set schema = h.scheming_get_dataset_schema(dataset_type) -%}
 
 {% block resource_additional_information_inner %}
-  {% if res.datastore_active %}
+  {% set ddict=h.datastore_dictionary(res.id) %}
+  {% if res.datastore_active and h.is_data_dict_active(ddict) %}
     <section class="module data-dictionary">
       {% set ddict=h.datastore_dictionary(res.id) %}
       <div class="module-content">

@@ -6,6 +6,15 @@ import logging
 log = logging.getLogger(__name__)
 
 
+def is_data_dict_active(ddict):
+    """"Returns True if data dictionary is populated"""
+    for col in ddict:
+        info = col.get('info', {})
+        if info.get('label') or info.get('notes'):
+            return True
+    return False
+
+
 def composite_repeating_get_formatted_contact_address_dict(package_dict_field):
     address_line1 = package_dict_field['address']
     address_line2 = '{0}, {1} {2}'.format(package_dict_field['city'], package_dict_field['state'],
