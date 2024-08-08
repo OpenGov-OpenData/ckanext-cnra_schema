@@ -41,7 +41,16 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.metadata_modified %}
+  {% if pkg_dict.metadata_created and g.user %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Created") }}</th>
+      <td class="dataset-details">
+        {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=pkg_dict.metadata_created %}
+      </td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.metadata_modified and g.user %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Last Updated") }}</th>
       <td class="dataset-details">
@@ -51,13 +60,14 @@
   {% endif %}
 
   {% block extras scoped %}
-    {% set sorted_extras = h.sorted_extras(pkg_dict.extras, subs={"dcat_modified": "DCAT Modified Date"}) %}
+    {% set subs_dict = {"dcat_issued": "DCAT Issued Date", "dcat_modified": "DCAT Modified Date"} %}
+    {% set sorted_extras = h.sorted_extras(pkg_dict.extras, subs=subs_dict) %}
     {% for extra in sorted_extras %}
       {% set key, value = extra %}
-      {% if key in ["DCAT Modified Date"] %}
-        <tr>
-          <th scope="row" class="dataset-label">{{ key }}</th>
-          <td class="dataset-details">{{ value }}</td>
+      {% if key in ["DCAT Issued Date", "DCAT Modified Date"] and g.user %}
+        <tr rel="dc:relation" resource="_:extra{{ i }}">
+          <th scope="row" class="dataset-label" property="rdfs:label">{{ key }}</th>
+          <td class="dataset-details" property="rdf:value">{{ value }}</td>
         </tr>
       {% endif %}
     {% endfor %}
