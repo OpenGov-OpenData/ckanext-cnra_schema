@@ -43,7 +43,7 @@
 
   {% if pkg_dict.metadata_created and g.user %}
     <tr>
-      <th scope="row" class="dataset-label">{{ _("Created") }}</th>
+      <th scope="row" class="dataset-label">{{ _("CKAN Created") }}</th>
       <td class="dataset-details">
         {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=pkg_dict.metadata_created %}
       </td>
@@ -52,7 +52,7 @@
 
   {% if pkg_dict.metadata_modified and g.user %}
     <tr>
-      <th scope="row" class="dataset-label">{{ _("Last Updated") }}</th>
+      <th scope="row" class="dataset-label">{{ _("CKAN Last Updated") }}</th>
       <td class="dataset-details">
         {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=pkg_dict.metadata_modified %}
       </td>
@@ -71,6 +71,16 @@
         </tr>
       {% endif %}
     {% endfor %}
+
+    {% set idInfoCitation_composite_dict = h.composite_get_as_dict(pkg_dict.idInfoCitation) %}
+    {% if idInfoCitation_composite_dict.publicationDate %}
+      <tr>
+        <th scope="row" class="dataset-label">{{ _("Publication Date") }}</th>
+        <td class="dataset-details">
+          {{ idInfoCitation_composite_dict.publicationDate }}
+        </td>
+      </tr>
+    {% endif %}
   {% endblock %}
 
 {% endblock %}

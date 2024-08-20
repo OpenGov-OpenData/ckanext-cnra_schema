@@ -50,16 +50,20 @@
       </thead>
       <tbody>
         {%- block resource_last_updated -%}
+          {% if res.last_modified and g.user %}
           <tr>
-            <th scope="row">{{ _('Last updated') }}</th>
+            <th scope="row">{{ _('CKAN Last updated') }}</th>
             <td>{{ h.render_datetime(res.last_modified) or h.render_datetime(res.revision_timestamp) or h.render_datetime(res.created) or h.render_datetime(res.Created) or _('unknown') }}</td>
           </tr>
+          {% endif %}
         {%- endblock -%}
         {%- block resource_created -%}
+          {% if res.created and g.user %}
           <tr>
-            <th scope="row">{{ _('Created') }}</th>
+            <th scope="row">{{ _('CKAN Created') }}</th>
             <td>{{ h.render_datetime(res.created) or h.render_datetime(res.Created) or _('unknown') }}</td>
           </tr>
+          {% endif %}
         {%- endblock -%}
         {%- block resource_format -%}
           <tr>
