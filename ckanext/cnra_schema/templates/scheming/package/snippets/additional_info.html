@@ -8,6 +8,7 @@
     'tag_string',
     'license_id',
     'owner_org',
+    'publisher'
     ] -%}
 
 {%- set always_fields = [
@@ -18,18 +19,35 @@
   {% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
   {% snippet 'scheming/snippets/cnra_schema_' ~ type ~ '.html', name='cnra_schema/composite-display-snippet-css' %}
 
+  {% if pkg_dict.publisher %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Publisher") }}</th>
+      <td class="dataset-details">
+        {{ _(pkg_dict.publisher) }}
+      </td>
+    </tr>
+  {% endif %}
+
+  {% set idInfoCitation_composite_dict = h.composite_get_as_dict(pkg_dict.idInfoCitation) %}
+  {% if idInfoCitation_composite_dict.publicationDate %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Publication Date") }}</th>
+      <td class="dataset-details">
+        {{ idInfoCitation_composite_dict.publicationDate }}
+      </td>
+    </tr>
+  {% endif %}
+
   {%- for field in schema.dataset_fields -%}
     {%- if field.field_name not in exclude_fields
         and field.display_snippet is not none
         and h.is_composite_field_populated(pkg_dict, field)
         and (pkg_dict[field.field_name] or field.field_name in always_fields) -%}
       <tr>
-        <th scope="row" class="dataset-label">{{
-          h.scheming_language_text(field.label) }}</th>
-        <td class="dataset-details"{%
-          if field.display_property %} property="{{ field.display_property
-          }}"{% endif %}>{%- snippet 'scheming/snippets/display_field.html',
-          field=field, data=pkg_dict, schema=schema -%}</td>
+        <th scope="row" class="dataset-label">{{ h.scheming_language_text(field.label) }}</th>
+        <td class="dataset-details"{% if field.display_property %} property="{{ field.display_property}}"{% endif %}>
+          {%- snippet 'scheming/snippets/display_field.html', field=field, data=pkg_dict, schema=schema -%}
+        </td>
       </tr>
     {%- endif -%}
   {%- endfor -%}
@@ -71,16 +89,6 @@
         </tr>
       {% endif %}
     {% endfor %}
-
-    {% set idInfoCitation_composite_dict = h.composite_get_as_dict(pkg_dict.idInfoCitation) %}
-    {% if idInfoCitation_composite_dict.publicationDate %}
-      <tr>
-        <th scope="row" class="dataset-label">{{ _("Publication Date") }}</th>
-        <td class="dataset-details">
-          {{ idInfoCitation_composite_dict.publicationDate }}
-        </td>
-      </tr>
-    {% endif %}
   {% endblock %}
 
 {% endblock %}
