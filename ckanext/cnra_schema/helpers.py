@@ -64,15 +64,19 @@ def is_dict_populated(package_dict_field):
     Returns True if the composite field is populated
     '''
     found_populated_field = False
+    exclude_keys_list = ['publicationDate']
 
     if isinstance(package_dict_field, (dict, list)):
-        package_dict_field_values = []
+        field_values = []
         if isinstance(package_dict_field, dict):
-            package_dict_field_values = package_dict_field.values()
+            field_keys = package_dict_field.keys()
+            if any(key in exclude_keys_list for key in field_keys):
+                return False
+            field_values = package_dict_field.values()
         else:
-            package_dict_field_values = package_dict_field
+            field_values = package_dict_field
 
-        for val in package_dict_field_values:
+        for val in field_values:
             if val and isinstance(val, dict):
                 found_populated_field = is_dict_populated(val)
             elif val and isinstance(val, list):

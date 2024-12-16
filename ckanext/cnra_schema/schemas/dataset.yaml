@@ -257,6 +257,7 @@ dataset_fields:
     label: Online Linkage
     preset: repeating_text
     form_blanks: 2
+  display_snippet: idInfoCitation_composite.html
 
 - field_name: credit
   label: Credit
