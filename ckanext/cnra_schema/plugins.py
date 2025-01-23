@@ -4,6 +4,7 @@ from markupsafe import Markup
 
 import ckan.plugins as p
 import ckanext.cnra_schema.helpers as cnra_schema_helpers
+import ckanext.cnra_schema.views as cnra_schema_views
 import ckanext.cnra_schema.waf_utils as waf_harvest_utils
 from ckanext.spatial.interfaces import ISpatialHarvester
 
@@ -13,6 +14,7 @@ log = logging.getLogger(__name__)
 class cnraSchema(p.SingletonPlugin):
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.IBlueprint)
     p.implements(ISpatialHarvester, inherit=True)
 
     # IConfigurer
@@ -428,3 +430,8 @@ ckanext.cnra_schema:schemas/organization.yaml
         package_dict = waf_harvest_utils.set_metadata_reference_information(package_dict, iso_values)
 
         return package_dict
+
+    # IBlueprint
+
+    def get_blueprint(self):
+        return cnra_schema_views.get_blueprints()
