@@ -69,10 +69,7 @@ def is_dict_populated(package_dict_field):
     if isinstance(package_dict_field, (dict, list)):
         field_values = []
         if isinstance(package_dict_field, dict):
-            field_keys = package_dict_field.keys()
-            if any(key in exclude_keys_list for key in field_keys):
-                return False
-            field_values = package_dict_field.values()
+            field_values = [v for k, v in package_dict_field.items() if k not in exclude_keys_list]
         else:
             field_values = package_dict_field
 
