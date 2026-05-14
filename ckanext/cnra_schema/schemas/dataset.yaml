@@ -84,22 +84,48 @@ dataset_fields:
   choices:
   - label: Irregular
     value: Irregular
+  - label: Hourly
+    value: Hourly
   - label: Daily
     value: Daily
+  - label: Three times a week
+    value: Three times a week
+  - label: Semiweekly
+    value: Semiweekly
   - label: Weekly
     value: Weekly
+  - label: Biweekly
+    value: Biweekly
+  - label: Semimonthly
+    value: Semimonthly
+  - label: Three times a month
+    value: Three times a month
+  - label: Bimonthly
+    value: Bimonthly
   - label: Monthly
     value: Monthly
   - label: Quarterly
     value: Quarterly
+  - label: Three times a year
+    value: Three times a year
   - label: Semiannual
     value: Semiannual
   - label: Annual
     value: Annual
+  - label: Biennial
+    value: Biennial
+  - label: Triennial
+    value: Triennial
+  - label: Quadrennial
+    value: Quadrennial
   - label: Decennial
     value: Decennial
+  - label: Continuous
+    value: Continuous
   - label: Other
     value: Other
+  - label: Unknown
+    value: Unknown
   display_snippet: select.html
 
 ## "license_id"
